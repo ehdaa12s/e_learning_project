@@ -1,0 +1,6 @@
+/* css/admin.css */
+.admin-specific {
+    /* Admin styles */
+    background: var(--primary);
+    color: white;
+}

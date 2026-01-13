@@ -52,19 +52,9 @@
                     placeholder="At least 8 characters" 
                     required 
                     minlength="8"
-    
-
-            
-            </div>
-            <div class="form-group">
-                <label for="confirm-password">Confirm Password</label>
-                <input 
-                    type="password" 
-                    id="confirm-password" 
-                    placeholder="Repeat your password" 
-                    required
                 >
             </div>
+         
 
             <button type="submit">Register</button>
 
@@ -95,7 +85,7 @@
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirm-password').value;
 
-
+        
             if (username.length < 4) {
                 errorMessage.textContent = 'Username must be at least 4 characters long';
                 return;
@@ -111,14 +101,12 @@
                 return;
             }
 
-            if (password !== confirmPassword) {
-                errorMessage.textContent = 'Passwords do not match';
-                return;
-            }
+            
+        
             errorMessage.style.color = 'green';
             errorMessage.textContent = 'Registration successful! (demo mode)';
             
-           
+            
         });
     </script>
 
