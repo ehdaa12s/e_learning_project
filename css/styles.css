@@ -1,0 +1,59 @@
+/* css/styles.css */
+:root {
+    --primary: #6A1B9A; 
+    --secondary: #EC407A; 
+    --text: #333;
+    --background: #fff;
+    --error: red;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background: var(--primary);
+    color: white;
+    padding: 1em;
+    text-align: center;
+}
+
+nav a {
+    color: white;
+    margin: 0 1em;
+    text-decoration: none;
+}
+
+form {
+    max-width: 400px;
+    margin: 2em auto;
+    padding: 1em;
+    border: 1px solid var(--primary);
+    border-radius: 5px;
+}
+
+input, select, textarea, button {
+    display: block;
+    width: 100%;
+    margin: 0.5em 0;
+    padding: 0.5em;
+}
+
+button {
+    background: var(--secondary);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+#error-message {
+    color: var(--error);
+}
