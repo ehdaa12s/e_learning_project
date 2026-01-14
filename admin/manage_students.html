@@ -1,10 +1,30 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Students</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Students | Admin</title>
+  <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>
-    
+
+<div class="container">
+  <h1>Manage Students</h1>
+
+  <table id="studentsTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <button id="backDashboardBtn" class="logoutBtn">Back to Dashboard</button>
+</div>
+
+<script src="../js/auth.js"></script>
+<script src="../js/students.js"></script>
 </body>
 </html>

@@ -1,6 +1,220 @@
-/* css/admin.css */
-.admin-specific {
-    /* Admin styles */
-    background: var(--primary);
-    color: white;
+/* ======================= General ======================= */
+body {
+  font-family: 'Arial', sans-serif;
+  background: #f9f9fb;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+h1, h2 {
+  color: #333;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+h2 {
+  margin-top: 40px;
+  margin-bottom: 20px;
+  color: #444;
+}
+
+/* ======================= Dashboard Cards ======================= */
+.dashboard-cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.card {
+  flex: 1 1 250px;
+  background: #007bff;
+  color: #fff;
+  padding: 25px 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.card h2 {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+}
+
+.card .btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #28a745;
+  color: #fff;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.card .btn:hover {
+  background: #218838;
+}
+
+/* ======================= Tables ======================= */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+table thead {
+  background: #f1f1f1;
+}
+
+table th, table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+table th {
+  color: #333;
+  font-weight: bold;
+}
+
+/* ======================= Forms ======================= */
+.form-inline,
+.form-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+input, select, button, textarea {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0,123,255,0.3);
+}
+
+button {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #0069d9;
+}
+
+/* ======================= Messages ======================= */
+.error {
+  color: #dc3545;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.success {
+  color: #28a745;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+/* ======================= Action Buttons in Tables ======================= */
+.editBtn, .deleteBtn {
+  padding: 6px 10px;
+  margin-right: 5px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.editBtn {
+  background: #ffc107;
+  color: #333;
+}
+
+.editBtn:hover {
+  background: #e0a800;
+}
+
+.deleteBtn {
+  background: #dc3545;
+  color: #fff;
+}
+
+.deleteBtn:hover {
+  background: #c82333;
+}
+
+/* ======================= Logout Button ======================= */
+.logoutBtn {
+  display: block;
+  margin: 20px auto;
+  padding: 12px 25px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: 0.3s;
+}
+
+.logoutBtn:hover {
+  background: #c82333;
+}
+
+/* ======================= Responsive ======================= */
+@media(max-width: 768px){
+  .dashboard-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .card {
+    flex: 1 1 90%;
+  }
+
+  .form-inline, .form-group {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  table th, table td {
+    font-size: 0.9rem;
+  }
 }

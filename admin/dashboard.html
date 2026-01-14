@@ -1,12 +1,67 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>
-    
-    
 
+<div class="container">
+  <h1>Admin Dashboard</h1>
+
+  <!-- الإحصائيات -->
+  <div class="dashboard-cards">
+    <div class="card">
+      <h2 id="totalCategories">0</h2>
+      <p>Total Categories</p>
+      <a href="manage_categories.html" class="btn">Manage Categories</a>
+    </div>
+    <div class="card">
+      <h2 id="totalCourses">0</h2>
+      <p>Total Courses</p>
+      <a href="manage_courses.html" class="btn">Manage Courses</a>
+    </div>
+    <div class="card">
+      <h2 id="totalStudents">0</h2>
+      <p>Total Students</p>
+      <a href="manage_students.html" class="btn">View Students</a>
+    </div>
+  </div>
+
+  <button id="logoutBtn" class="logoutBtn">Logout</button>
+</div>
+
+<script src="../js/auth.js"></script>
+
+<script >
+    document.addEventListener('DOMContentLoaded', () => {
+  const totalCategories = document.getElementById('totalCategories');
+  const totalCourses = document.getElementById('totalCourses');
+  const totalStudents = document.getElementById('totalStudents');
+
+  function updateStats(){
+    const categories = JSON.parse(localStorage.getItem('categories')) || [];
+    const courses = JSON.parse(localStorage.getItem('courses')) || [];
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const students = users.filter(u => u.type === 'student');
+
+    totalCategories.textContent = categories.length;
+    totalCourses.textContent = courses.length;
+    totalStudents.textContent = students.length;
+  }
+
+  updateStats();
+
+  // Logout
+  const logoutBtn = document.getElementById('logoutBtn');
+  logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('currentUser');
+    window.location.href = '../login.html';
+  });
+});
+
+</script>
 </body>
 </html>
