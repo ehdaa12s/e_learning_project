@@ -38,7 +38,7 @@ form {
 
 input, select, textarea, button {
     display: block;
-    width: 100%;
+    width: 90%;
     margin: 0.5em 0;
     padding: 0.5em;
 }

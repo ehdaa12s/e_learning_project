@@ -1,114 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Register | E-Learning</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | E-Learning</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-    <header>
-        <h1>E-Learning Platform</h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="/student/courses.html">Courses</a>
-            <a href="contact.html">Contact</a>
-            <a href="login.html">Login</a>
-        </nav>
-    </header>
-<center>
-    <main>
-        <form id="register-form">
-            <h2>Create New Account</h2>
+<header>
+    <h1>E-Learning Platform</h1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="student/courses.html">Courses</a>
+        <a href="contact.html">Contact</a>
+        <a href="register.html">Register</a>
+    </nav>
+</header>
 
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input 
-                    type="text" 
-                    id="username" 
-                    placeholder="Choose your username" 
-                    required 
-                    minlength="4"
-                    maxlength="20"
-                >
-            </div>
+<main>
+    <center>
+    <form id="loginForm">
+        <h2>Login</h2>
 
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input 
-                    type="email" 
-                    id="email" 
-                    placeholder="your.email@example.com" 
-                    required
-                >
-            </div>
+        <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" placeholder="your.email@example.com" required>
+            <div class="error" id="loginEmailError"></div>
+        </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input 
-                    type="password" 
-                    id="password" 
-                    placeholder="At least 8 characters" 
-                    required 
-                    minlength="8"
-                >
-            </div>
-         
+        <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" placeholder="Enter your password" required>
+            <div class="error" id="loginPasswordError"></div>
+        </div>
 
-            <button type="submit">Register</button>
+        <button type="submit">Login</button>
+        <div class="success" id="loginSuccess"></div>
 
-            <p class="form-footer">
-                Already have an account? 
-                <a href="login.html">Login here</a>
-            </p>
-
-            <p id="error-message"></p>
-        </form>
-    </main>
-
-    <footer>
-        <p>© 2026 E-Learning Platform. All rights reserved.</p>
-    </footer>
+        <p class="form-footer">
+            Don't have an account? <a href="register.html">Register here</a>
+        </p>
+    </form>
     </center>
+</main>
 
-    <script>
-        const form = document.getElementById('register-form');
-        const errorMessage = document.getElementById('error-message');
+<footer>x
+    <p>© 2026 E-Learning Platform. All rights reserved.</p>
+</footer>
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            errorMessage.textContent = '';
-
-            const username = document.getElementById('username').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-
-        
-            if (username.length < 4) {
-                errorMessage.textContent = 'Username must be at least 4 characters long';
-                return;
-            }
-
-            if (!email.includes('@') || !email.includes('.')) {
-                errorMessage.textContent = 'Please enter a valid email address';
-                return;
-            }
-
-            if (password.length < 8) {
-                errorMessage.textContent = 'Password must be at least 8 characters long';
-                return;
-            }
-
-            
-        
-            errorMessage.style.color = 'green';
-            errorMessage.textContent = 'Registration successful! (demo mode)';
-            
-            
-        });
-    </script>
-
+<script src="js/auth.js"></script>
 </body>
 </html>
