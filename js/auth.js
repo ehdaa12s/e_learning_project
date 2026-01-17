@@ -1,6 +1,6 @@
 // auth.js
 
-import { User } from "./js/user.js";
+import { User } from "./user.js";
 
 
 
