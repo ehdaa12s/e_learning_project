@@ -1,18 +1,20 @@
+// js/user.js
+import { DB } from "./db.js";
 
- export class User {
+export class User {
   constructor(id, name, email, password, role = 'student') {
     this.id = id;
     this.name = name;
     this.email = email;
     this.password = password;
-    this.role = role;
+    this.role = role; // لازم يكون role مش type
   }
 
   static register(name, email, password, role = 'student') {
     const users = JSON.parse(localStorage.getItem('users')) || [];
     if (users.some(u => u.email === email)) throw 'Email already exists';
-    const id = Date.now();
-    const user = { id, name, email, password, role };
+    const id = 'u' + Date.now();
+    const user = { id, name, email, password, role }; // role هنا
     users.push(user);
     localStorage.setItem('users', JSON.stringify(users));
     return user;
@@ -25,7 +27,6 @@
     localStorage.setItem('currentUser', JSON.stringify(user));
     return user;
   }
-
   static logout() {
     localStorage.removeItem('currentUser');
   }
@@ -34,4 +35,3 @@
     return JSON.parse(localStorage.getItem('currentUser'));
   }
 }
-

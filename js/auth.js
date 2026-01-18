@@ -1,4 +1,55 @@
-document.addEventListener('DOMContentLoaded', function() {
+// js/auth.js
+import { User } from "./user.js";
+
+document.addEventListener('DOMContentLoaded', () => {
+  const loginForm = document.getElementById('loginForm');
+  if (!loginForm) return;
+
+  const emailInput = document.getElementById('loginEmail');
+  const passwordInput = document.getElementById('loginPassword');
+  const emailError = document.getElementById('loginEmailError');
+  const passwordError = document.getElementById('loginPasswordError');
+  const loginSuccess = document.getElementById('loginSuccess');
+
+  loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    emailError.textContent = '';
+    passwordError.textContent = '';
+    loginSuccess.textContent = '';
+
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if (!email) { emailError.textContent = 'Email is required'; return; }
+    if (!password) { passwordError.textContent = 'Password is required'; return; }
+
+    try {
+      const user = User.login(email, password);
+
+      loginSuccess.textContent = `Welcome ${user.name}! Redirecting...`;
+      loginSuccess.style.color = 'green';
+
+      setTimeout(() => {
+        // إعادة التوجيه حسب role
+        if (user.role === 'admin') {
+          window.location.href = 'admin/dashboard.html';
+        } else if (user.role === 'student') {
+          window.location.href = 'student/courses.html';
+        } else {
+          alert('Unknown role, cannot redirect!');
+        }
+      }, 1000);
+
+    } catch (err) {
+      passwordError.textContent = err.toString();
+      passwordError.style.color = 'red';
+    }
+  });
+});
+
+
+/*document.addEventListener('DOMContentLoaded', function() {
 
     // ---------- Register ----------
     const registerForm = document.getElementById('registerForm');
@@ -120,4 +171,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-});
+});*/

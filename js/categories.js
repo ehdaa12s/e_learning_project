@@ -1,16 +1,18 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const categoryNameInput = document.getElementById('categoryName');
-  const addCategoryBtn = document.getElementById('addCategoryBtn');
-  const categoriesTableBody = document.querySelector('#categoriesTable tbody');
-  const categoryError = document.getElementById('categoryError');
-  const categorySuccess = document.getElementById('categorySuccess');
+import { Category } from "./category.js";
 
-  let categories = JSON.parse(localStorage.getItem('categories')) || [];
+document.addEventListener("DOMContentLoaded", () => {
+  const categoryNameInput = document.getElementById("categoryName");
+  const addCategoryBtn = document.getElementById("addCategoryBtn");
+  const categoriesTableBody = document.querySelector("#categoriesTable tbody");
+  const categoryError = document.getElementById("categoryError");
+  const categorySuccess = document.getElementById("categorySuccess");
 
   function renderCategories() {
-    categoriesTableBody.innerHTML = '';
+    const categories = Category.getAll();
+    categoriesTableBody.innerHTML = "";
+
     categories.forEach(cat => {
-      const tr = document.createElement('tr');
+      const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${cat.id}</td>
         <td>${cat.name}</td>
@@ -22,68 +24,57 @@ document.addEventListener('DOMContentLoaded', () => {
       categoriesTableBody.appendChild(tr);
     });
 
-    // Edit buttons
-    document.querySelectorAll('.editBtn').forEach(btn => {
-      btn.addEventListener('click', () => {
+    // Edit
+    document.querySelectorAll(".editBtn").forEach(btn => {
+      btn.addEventListener("click", () => {
         const catId = btn.dataset.id;
-        const cat = categories.find(c => c.id == catId);
-        const newName = prompt('Edit Category Name', cat.name);
-        if (newName && newName.trim() !== '') {
+        const cat = Category.findById(catId);
+        const newName = prompt("Edit Category Name", cat.name);
+        if (!newName || newName.trim() === "") return;
 
-          if (categories.some(c => c.name.toLowerCase() === newName.trim().toLowerCase() && c.id != catId)) {
-            categoryError.textContent = 'Category name already exists!';
-            categorySuccess.textContent = '';
-            return;
-          }
-
-          cat.name = newName.trim();
-          localStorage.setItem('categories', JSON.stringify(categories));
-          categorySuccess.textContent = 'Category updated successfully!';
-          categoryError.textContent = '';
+        try {
+          Category.update(catId, { name: newName.trim() });
+          categorySuccess.textContent = "Category updated successfully!";
+          categoryError.textContent = "";
           renderCategories();
+        } catch (err) {
+          categoryError.textContent = err;
+          categorySuccess.textContent = "";
         }
       });
     });
 
-    // Delete buttons
-    document.querySelectorAll('.deleteBtn').forEach(btn => {
-      btn.addEventListener('click', () => {
+    // Delete
+    document.querySelectorAll(".deleteBtn").forEach(btn => {
+      btn.addEventListener("click", () => {
         const catId = btn.dataset.id;
-        categories = categories.filter(c => c.id != catId);
-        localStorage.setItem('categories', JSON.stringify(categories));
-        categorySuccess.textContent = 'Category deleted successfully!';
-        categoryError.textContent = '';
+        Category.delete(catId);
+        categorySuccess.textContent = "Category deleted successfully!";
+        categoryError.textContent = "";
         renderCategories();
       });
     });
   }
 
-  addCategoryBtn.addEventListener('click', () => {
+  // Add Category
+  addCategoryBtn.addEventListener("click", () => {
     const name = categoryNameInput.value.trim();
-
     if (!name) {
-      categoryError.textContent = 'Category name cannot be empty!';
-      categorySuccess.textContent = '';
+      categoryError.textContent = "Category name cannot be empty!";
+      categorySuccess.textContent = "";
       return;
     }
 
-    if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
-      categoryError.textContent = 'Category name already exists!';
-      categorySuccess.textContent = '';
-      return;
+    try {
+      Category.create(name);
+      categoryNameInput.value = "";
+      categorySuccess.textContent = "Category added successfully!";
+      categoryError.textContent = "";
+      renderCategories();
+    } catch (err) {
+      categoryError.textContent = err;
+      categorySuccess.textContent = "";
     }
-
-    const newCategory = {
-      id: 'c' + Date.now(),
-      name
-    };
-
-    categories.push(newCategory);
-    localStorage.setItem('categories', JSON.stringify(categories));
-    categoryNameInput.value = '';
-    categorySuccess.textContent = 'Category added successfully!';
-    categoryError.textContent = '';
-    renderCategories();
   });
 
   renderCategories();
