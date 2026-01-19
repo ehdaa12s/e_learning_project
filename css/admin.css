@@ -1,4 +1,21 @@
 /* ======================= General ======================= */
+:root {
+    --primary: #7B1FA2;
+    --secondary: #D81B60; 
+    --text: white;
+    --background: #fff;
+    --error: red;
+    --footer-bg: #333;
+}
+
+header {
+    background: var(--secondary);
+    color: white;
+    padding: 1em;
+    text-align: center;
+    text-decoration: #ccc;
+}
+
 body {
   font-family: 'Arial', sans-serif;
   background: #f9f9fb;
@@ -6,7 +23,12 @@ body {
   margin: 0;
   padding: 0;
 }
-
+.containerDashboard {
+  max-width: 1400px;
+  margin: 20px auto;
+  padding: 20px;
+  color :#333;
+}
 .container {
   max-width: 1200px;
   margin: 20px auto;
