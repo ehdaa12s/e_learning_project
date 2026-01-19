@@ -1,22 +1,28 @@
-class Enrollment {
-  constructor(id, studentId, courseId, enrollDate, status) {
-    this.id = id;
-    this.studentId = studentId;
-    this.courseId = courseId;
-    this.enrollDate = enrollDate;
-    this.status = status; // pending, approved, rejected
-  }
+import { DB } from "./db.js";
 
-  approve() {
-    this.status = "approved";
-  }
+export const Enrollment = {
 
-  reject() {
-    this.status = "rejected";
-  }
+  enroll(userId, courseId) {
+    const enrollments = DB.getEnrollments();
 
-  updateStatus(newStatus) {
-    this.status = newStatus;
+    const exists = enrollments.some(
+      e => e.userId === userId && e.courseId === courseId
+    );
+    if (exists) return;
+
+    enrollments.push({
+      id: Date.now(),
+      userId,
+      courseId,
+      date: new Date().toISOString()
+    });
+
+    DB.saveEnrollments(enrollments);
+  },
+
+  isEnrolled(userId, courseId) {
+    return DB.getEnrollments().some(
+      e => e.userId === userId && e.courseId === courseId
+    );
   }
-}
-export default Enrollment;
+};

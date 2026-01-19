@@ -2,23 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
   <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>
 
-<header>
-  <h1>E-Learning Admin Panel</h1>
-
-    <a href="index.html" >Home</a>
-    <a href="dashboard.html" class="active">Dashboard</a>
-    <a href="manage_categories.html">Manage Categories</a>
-    <a href="manage_courses.html">Manage Courses</a>
-    <a href="manage_students.html">Manage Students</a>
-    <a href="lib/profiles.html">Profile</a>  
-
-</header>
+<div class="container">
+  <h1>Admin Dashboard</h1>
 
   <div class="dashboard-cards">
     <div class="card">
@@ -32,18 +22,18 @@
       <a href="manage_courses.html" class="btn">Manage Courses</a>
     </div>
     <div class="card">
-      <h2 id="totalStudents">0</h2>
-      <p>Total Students</p>
-      <a href="manage_students.html" class="btn">View Students</a>
+      <h2 id="totalUsers">0</h2>
+      <p>Total Users</p>
+      <a href="manage_students.html" class="btn">Manage Users</a>
+    </div>
+    <div class="card">
+      <h2 id="totalEnrollments">0</h2>
+      <p>Total Enrollments</p>
+      <a href="manage_enrolments.html" class="btn">Manage Enrollments</a>
     </div>
   </div>
-
-  <button id="logoutBtn" class="logoutBtn">Logout</button>
 </div>
 
-<script  src="../js/auth.js"></script>
-
-
-</script>
+<script type="module" src="../js/dashboard.js"></script>
 </body>
 </html>

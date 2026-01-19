@@ -218,3 +218,34 @@ button {
   }
 }
 
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.modal-card {
+  background: #fff;
+  padding: 20px;
+  width: 400px;
+  border-radius: 8px;
+}
+
+.modal-card input,
+.modal-card textarea,
+.modal-card select {
+  width: 90%;
+  margin-bottom: 10px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+}

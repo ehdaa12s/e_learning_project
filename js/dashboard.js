@@ -1,0 +1,18 @@
+import { DB } from "../js/db.js";
+
+document.addEventListener("DOMContentLoaded", () => {
+  const totalCategories = document.getElementById("totalCategories");
+  const totalCourses = document.getElementById("totalCourses");
+  const totalUsers = document.getElementById("totalUsers");
+  const totalEnrollments = document.getElementById("totalEnrollments");
+
+  const categories = DB.getCategories();
+  const courses = DB.getCourses();
+  const users = DB.getUsers();
+  const enrollments = DB.getEnrollments();
+
+  totalCategories.textContent = categories.length;
+  totalCourses.textContent = courses.length;
+  totalUsers.textContent = users.length;
+  totalEnrollments.textContent = enrollments.length;
+});

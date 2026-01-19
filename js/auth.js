@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
       loginSuccess.style.color = 'green';
 
       setTimeout(() => {
-        // إعادة التوجيه حسب role
         if (user.role === 'admin') {
           window.location.href = 'admin/dashboard.html';
         } else if (user.role === 'student') {
