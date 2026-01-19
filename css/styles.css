@@ -1,10 +1,11 @@
 /* css/styles.css */
 :root {
-    --primary: #6A1B9A; 
-    --secondary: #EC407A; 
+    --primary: #7B1FA2;
+    --secondary: #D81B60; 
     --text: #333;
     --background: #fff;
     --error: red;
+    --footer-bg: #333;
 }
 
 body {
@@ -56,4 +57,17 @@ button:hover {
 
 #error-message {
     color: var(--error);
+}
+footer ,.LoginFooter{
+    background: var(--footer-bg);
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+}
+
+.LoginFooter{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
 }

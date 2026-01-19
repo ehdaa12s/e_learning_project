@@ -1,10 +1,73 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Progress</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Progress - E-Learning</title>
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/student.css">
+<style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
+    h1 { text-align: center; margin-bottom: 30px; color: #333; }
+    .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 20px; }
+    .course-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    .course-card h3 { margin-bottom: 10px; color: #4361ee; }
+    .progress-section { margin-top: 15px; }
+    .progress-bar { background: #ddd; border-radius: 10px; height: 15px; overflow: hidden; }
+    .progress-fill { height: 100%; background: #3f37c9; width: 0%; transition: width 0.3s; }
+    .progress-text { font-size: 0.9rem; margin-top: 5px; display: block; }
+    .btn-primary { display: inline-block; margin-top: 10px; padding: 10px 15px; background: #3f37c9; color: white; border-radius: 8px; text-decoration: none; }
+    .btn-primary:hover { background: #2e2bb5; }
+    .no-data { text-align: center; color: #888; font-size: 1.1rem; margin-top: 30px; }
+</style>
 </head>
 <body>
-    
+
+<h1>My Progress</h1>
+<div id="progressContainer" class="courses-grid">
+    <!-- Courses with progress will appear here -->
+</div>
+
+<script type="module">
+import { DB } from "../js/db.js";
+
+const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+if(!currentUser.email || currentUser.type !== 'student') {
+    window.location.href = '../login.html';
+}
+
+const progressContainer = document.getElementById('progressContainer');
+
+function loadProgress() {
+    const enrollments = DB.getEnrollments();
+    const courses = DB.getCourses();
+
+    const userEnrollments = enrollments.filter(e => e.studentId === currentUser.id);
+    if(userEnrollments.length === 0){
+        progressContainer.innerHTML = '<p class="no-data">You are not enrolled in any courses yet.</p>';
+        return;
+    }
+
+    progressContainer.innerHTML = userEnrollments.map(enrollment => {
+        const course = courses.find(c => c.id === enrollment.courseId);
+        if(!course) return '';
+        return `
+            <div class="course-card">
+                <h3>${course.title}</h3>
+                <p>Instructor: ${course.instructor || 'Unknown'}</p>
+                <div class="progress-section">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${enrollment.progress}%"></div>
+                    </div>
+                    <span class="progress-text">${enrollment.progress}% Complete</span>
+                </div>
+                <a href="course-details.html?id=${course.id}" class="btn-primary">Continue Learning</a>
+            </div>
+        `;
+    }).join('');
+}
+
+loadProgress();
+</script>
 </body>
 </html>

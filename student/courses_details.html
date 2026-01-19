@@ -1,139 +1,42 @@
-<!-- course-details.html - Separate Details Page -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Course Details</title>
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: #222;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .container {
-      max-width: 800px;
-      margin: 40px auto;
-      background: white;
-      border-radius: 16px;
-      padding: 40px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.25);
-    }
-    .back-btn {
-      display: inline-block;
-      margin-bottom: 25px;
-      padding: 10px 20px;
-      background: #4f46e5;
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: 600;
-    }
-    .back-btn:hover { background: #4338ca; }
-    h1 {
-      color: #4361ee;
-      margin-bottom: 25px;
-      font-size: 2.4rem;
-    }
-    .detail-item {
-      margin: 20px 0;
-      font-size: 1.2rem;
-      line-height: 1.6;
-    }
-    .detail-item strong {
-      color: #4361ee;
-      display: inline-block;
-      width: 140px;
-    }
-    .description {
-      margin-top: 30px;
-      padding: 20px;
-      background: #f8fafc;
-      border-left: 5px solid #4361ee;
-      border-radius: 8px;
-    }
-  </style>
+  <link rel="stylesheet" href="../css/student.css">
 </head>
 <body>
-
   <div class="container">
-    <a href="courses.html" class="back-btn">← Back to Courses</a>
+    <a href="courses.html">← Back to Courses</a>
 
     <h1 id="courseTitle"></h1>
-
-    <div class="detail-item"><strong>Course Code:</strong> <span id="courseCode"></span></div>
-    <div class="detail-item"><strong>Instructor:</strong> <span id="instructor"></span></div>
-    <div class="detail-item"><strong>Credits:</strong> <span id="credits"></span></div>
-    <div class="detail-item"><strong>Schedule:</strong> <span id="time"></span></div>
-    <div class="detail-item"><strong>Room:</strong> <span id="room"></span></div>
-
-    <div class="description">
-      <strong>Description:</strong><br>
-      <span id="description"></span>
-    </div>
+    <p><strong>Instructor:</strong> <span id="courseInstructor"></span></p>
+    <p><strong>Category:</strong> <span id="courseCategory"></span></p>
+    <p><strong>Duration:</strong> <span id="courseDuration"></span></p>
+    <p><strong>Price:</strong> <span id="coursePrice"></span></p>
+    <p><strong>Description:</strong> <span id="courseDescription"></span></p>
+    <p><strong>Content:</strong> <a href="#" id="courseContentLink" target="_blank">View Content</a></p>
   </div>
 
-  <script>
-    // Full course data (you can also load from JSON file/API later)
-    const courses = {
-      1: {
-        title: "Data Structures & Algorithms",
-        code: "CS202",
-        instructor: "Dr. Ahmed Khaled",
-        credits: 3,
-        time: "Sun & Tue 09:30 - 11:00",
-        room: "Lab 304",
-        description: "This course covers advanced data structures such as trees, graphs, hash tables, and heaps, along with algorithm design techniques including divide and conquer, greedy algorithms, and dynamic programming. Students will also study complexity analysis and problem-solving strategies."
-      },
-      2: {
-        title: "Database Systems",
-        code: "CS305",
-        instructor: "Prof. Mona Hassan",
-        credits: 3,
-        time: "Mon & Wed 12:30 - 14:00",
-        room: "Lecture Hall B",
-        description: "Introduction to database concepts, relational model, SQL, normalization, transaction management, concurrency control, and an overview of modern NoSQL databases and big data technologies."
-      },
-      3: {
-        title: "Web Development",
-        code: "CS310",
-        instructor: "Eng. Sara Mostafa",
-        credits: 4,
-        time: "Tue & Thu 14:30 - 16:30",
-        room: "Lab 208",
-        description: "Modern web development using HTML5, CSS3, JavaScript (ES6+), React.js, RESTful APIs, responsive design principles, and deployment practices."
-      },
-      4: {
-        title: "Operating Systems",
-        code: "CS401",
-        instructor: "Dr. Mohamed Ali",
-        credits: 3,
-        time: "Sat 10:00 - 12:30",
-        room: "Hall A-12",
-        description: "Core concepts of operating systems including processes, threads, memory management, file systems, CPU scheduling, synchronization, deadlocks, and an introduction to Linux kernel programming."
-      }
-    };
-
+  <script type="module">
+    import { Course } from "./course.js";
 
     const urlParams = new URLSearchParams(window.location.search);
-    const courseId = urlParams.get('id');
+    const courseId = urlParams.get("id");
 
-    if (courseId && courses[courseId]) {
-      const course = courses[courseId];
+    const course = Course.findById(courseId);
 
-      document.getElementById('courseTitle').textContent = course.title;
-      document.getElementById('courseCode').textContent = course.code;
-      document.getElementById('instructor').textContent = course.instructor;
-      document.getElementById('credits').textContent = course.credits;
-      document.getElementById('time').textContent = course.time;
-      document.getElementById('room').textContent = course.room;
-      document.getElementById('description').textContent = course.description;
+    if (course) {
+      document.getElementById("courseTitle").textContent = course.title;
+      document.getElementById("courseInstructor").textContent = course.instructor;
+      document.getElementById("courseCategory").textContent = course.category;
+      document.getElementById("courseDuration").textContent = course.duration;
+      document.getElementById("coursePrice").textContent = course.price > 0 ? "$" + course.price : "Free";
+      document.getElementById("courseDescription").textContent = course.description;
+      document.getElementById("courseContentLink").href = course.content;
     } else {
-      document.getElementById('courseTitle').textContent = "Course Not Found";
-      document.querySelector('.container').innerHTML += "<p style='color:red; margin-top:20px;'>Invalid course ID. Please go back and select a course.</p>";
+      document.getElementById("courseTitle").textContent = "Course Not Found";
     }
   </script>
 </body>

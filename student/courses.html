@@ -1,116 +1,25 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Courses</title>
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: #222;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .container { max-width: 1200px; margin: 0 auto; }
-    header {
-      text-align: center;
-      color: white;
-      margin: 40px 0 60px;
-    }
-    header h1 { font-size: 2.8rem; }
-    .courses-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 30px;
-    }
-    .course-card {
-      background: white;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-      transition: all 0.3s;
-    }
-    .course-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-    }
-    .course-header {
-      background: #4361ee;
-      color: white;
-      padding: 25px;
-      text-align: center;
-    }
-    .course-header h3 { margin:0; font-size: 1.5rem; }
-    .course-body { padding: 25px; }
-    .btn-details {
-      display: block;
-      width: 90%;
-      margin: 20px auto;
-      padding: 14px;
-      background: #3f37c9;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .btn-details:hover { background: #2e2bb5; transform: translateY(-2px); }
-    @media (max-width: 600px) { .courses-grid { grid-template-columns: 1fr; } }
-  </style>
+  <title>My Courses - Student</title>
+  <link rel="stylesheet" href="../css/student.css">
 </head>
-
 <body>
-    <header>
-      <a href="index.html" style="color:white; text-decoration:none;">
-        <h1>E-Learning Platform</h1>
-        </a>
-        <a href="contact.html" style="color:white; text-decoration:none; position:absolute; top:30px; right:30px;">Contact Us</a>
-        <a href="login.html" style="color:white; text-decoration:none; position:absolute; top:30px; right:120px;">Login</a>
-
-
-      <p>Welcome to your course dashboard</p>
-    </header>
+  <header>
+    <h1>Available Courses</h1>
+    <p>Browse and enroll in courses</p>
+  </header>
 
   <div class="container">
     <div class="courses-grid" id="coursesContainer">
-      <!-- Course cards will be injected here by JavaScript -->
+      <!-- Course cards will be injected here by JS -->
     </div>
+  </div>
 
-  <script>
-    const courses = [
-      { id: 1, title: "Data Structures & Algorithms", code: "CS202", credits: 3 },
-      { id: 2, title: "Database Systems", code: "CS305", credits: 3 },
-      { id: 3, title: "Web Development", code: "CS310", credits: 4 },
-      { id: 4, title: "Operating Systems", code: "CS401", credits: 3 }
-    ];
-
-    const container = document.getElementById('coursesContainer');
-
-    courses.forEach(course => {
-      const card = document.createElement('div');
-      card.className = 'course-card';
-
-      card.innerHTML = `
-        <div class="course-header">
-          <h3>${course.title}</h3>
-        </div>
-        <div class="course-body">
-          <div style="margin:15px 0; font-size:1.1rem;">
-            <strong>Code:</strong> ${course.code}<br>
-            <strong>Credits:</strong> ${course.credits}
-          </div>
-          <a href="courses_details.html?id=${course.id}" class="btn-details">
-            View Details
-          </a>
-        </div>
-      `;
-
-      container.appendChild(card);
-    });
-  </script>
+  <!-- External JS files -->
+  <script type="module" src="../js/auth.js"></script>
+  <script type="module" src="../js/courses.js"></script>
 </body>
 </html>

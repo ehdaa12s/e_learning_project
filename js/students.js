@@ -1,63 +1,31 @@
-import User from "./user";
+import { DB } from "../js/db.js";   // تأكد المسار صحيح حسب مكان students.js
+import { User } from "../js/user.js";
 
-class Student extends User {
-    constructor(id, name, email, password) {
-        super(id, name, email, password, 'student');
-    }
-  static enrollCourse(courseId) {
-    const enrollments = DB.getEnrollments();
-    const user = User.currentUser();
-    if (!user) throw 'Login required';
-    const id = Date.now();
-    enrollments.push({ id, studentId: user.id, courseId, enrollDate: new Date(), status: 'pending' });
-    DB.saveEnrollments(enrollments);
-    return id;
-  }
+document.addEventListener('DOMContentLoaded', () => {
+  const studentsTableBody = document.querySelector('#studentsTable tbody');
+  const studentsCountEl = document.getElementById('studentsCount');
+  const backBtn = document.getElementById('backDashboardBtn');
 
-  static addToWishlist(courseId) {
-    const user = User.currentUser();
-    const wishlist = JSON.parse(localStorage.getItem('wishlist')) || {};
-    wishlist[user.id] = wishlist[user.id] || [];
-    if (!wishlist[user.id].includes(courseId)) wishlist[user.id].push(courseId);
-    localStorage.setItem('wishlist', JSON.stringify(wishlist));
-  }
+  // جلب كل المستخدمين من LocalStorage
+  const users = DB.getUsers();
+  const students = users.filter(u => u.role === 'student');
 
-  static removeFromWishlist(courseId) {
-    const user = User.currentUser();
-    const wishlist = JSON.parse(localStorage.getItem('wishlist')) || {};
-    wishlist[user.id] = wishlist[user.id]?.filter(id => id !== courseId) || [];
-    localStorage.setItem('wishlist', JSON.stringify(wishlist));
-  }
+  // عرض عدد الطلاب
+  studentsCountEl.textContent = `Total Students: ${students.length}`;
 
-  static trackProgress(courseId, moduleId) {
-    const user = User.currentUser();
-    const progress = JSON.parse(localStorage.getItem('progress')) || {};
-    progress[user.id] = progress[user.id] || {};
-    progress[user.id][courseId] = progress[user.id][courseId] || [];
-    if (!progress[user.id][courseId].includes(moduleId)) progress[user.id][courseId].push(moduleId);
-    localStorage.setItem('progress', JSON.stringify(progress));
-  }
+  // عرض الطلاب في الجدول
+  students.forEach(student => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${student.id}</td>
+      <td>${student.name}</td>
+      <td>${student.email}</td>
+    `;
+    studentsTableBody.appendChild(tr);
+  });
 
-  static makePayment(courseId, amount) {
-    const user = User.currentUser();
-    const payments = DB.getPayments();
-    const id = Date.now();
-    payments.push({ id, studentId: user.id, courseId, amount, paymentDate: new Date(), paymentMethod: 'PayPal' });
-    DB.savePayments(payments);
-  }
-
-  static submitFeedback(courseId, rating, comment) {
-    const user = User.currentUser();
-    const feedback = DB.getFeedback();
-    feedback.push({ id: Date.now(), studentId: user.id, courseId, rating, comment });
-    DB.saveFeedback(feedback);
-  }
-
-  static generateCertificate(courseId) {
-    const user = User.currentUser();
-    const certificates = DB.getCertificates();
-    certificates.push({ id: Date.now(), studentId: user.id, courseId, issueDate: new Date() });
-    DB.saveCertificates(certificates);
-  }
-}
-export default Student;
+  // زر العودة للداشبورد
+  backBtn.addEventListener('click', () => {
+    window.location.href = 'dashboard.html';
+  });
+});

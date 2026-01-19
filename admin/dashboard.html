@@ -1,14 +1,40 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>
-    
-    <h1>Admin Dashboard</h1>
-    <p>Welcome, Admin! Here you can manage the platform.</p>
-    
 
+<div class="container">
+  <h1>Admin Dashboard</h1>
+
+  <div class="dashboard-cards">
+    <div class="card">
+      <h2 id="totalCategories">0</h2>
+      <p>Total Categories</p>
+      <a href="manage_categories.html" class="btn">Manage Categories</a>
+    </div>
+    <div class="card">
+      <h2 id="totalCourses">0</h2>
+      <p>Total Courses</p>
+      <a href="manage_courses.html" class="btn">Manage Courses</a>
+    </div>
+    <div class="card">
+      <h2 id="totalStudents">0</h2>
+      <p>Total Students</p>
+      <a href="manage_students.html" class="btn">View Students</a>
+    </div>
+  </div>
+
+  <button id="logoutBtn" class="logoutBtn">Logout</button>
+</div>
+
+<script  src="../js/auth.js"></script>
+
+
+</script>
 </body>
 </html>
