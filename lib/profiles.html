@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <link rel="stylesheet" href="/css/profile.css">
+</head>
+<body>
+
+<div class="container">
+    <h1> Profile Page</h1>
+
+    <div class="card">
+        <input type="text" id="name" placeholder="Name">
+        <input type="email" id="email" placeholder="Email">
+        <button onclick="updateProfile()">Update Profile</button>
+    </div>
+
+    <div class="card">
+        <input type="password" id="oldPassword" placeholder="Old Password">
+        <input type="password" id="newPassword" placeholder="New Password">
+        <button onclick="changePassword()">Change Password</button>
+    </div>
+
+    <p id="message"></p>
+</div>
+
+<script type="module" src="js/profile.js"></script>
+</body>
+</html>
