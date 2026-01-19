@@ -1,200 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard - E-Learning</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/student.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Dashboard</title>
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/student.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-brand">
-                <h1>E-Learning</h1>
+
+<h1>Welcome, <span id="studentName">Student</span>!</h1>
+
+<h2>My Courses</h2>
+<div id="myCoursesContainer" class="courses-grid"></div>
+
+<script type="module">
+import { DB } from "../js/db.js";
+
+const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+if(!currentUser.email || currentUser.type !== 'student'){
+    window.location.href = '../login.html';
+}
+
+document.getElementById('studentName').textContent = currentUser.name || 'Student';
+
+function loadMyCourses(){
+    const enrollments = DB.getEnrollments().filter(e => e.studentId === currentUser.id);
+    const courses = DB.getCourses();
+    const container = document.getElementById('myCoursesContainer');
+
+    if(enrollments.length === 0){
+        container.innerHTML = '<p class="no-data">You have not enrolled in any courses yet.</p>';
+        return;
+    }
+
+    container.innerHTML = enrollments.map(e => {
+        const course = courses.find(c => c.id === e.courseId);
+        if(!course) return '';
+        return `
+            <div class="course-card">
+                <h3>${course.title}</h3>
+                <p>Instructor: ${course.instructor || 'Unknown'}</p>
+                <p>Progress: ${e.progress || 0}%</p>
+                <a href="course-details.html?id=${course.id}" class="btn-primary">Continue Course</a>
             </div>
-            <ul class="nav-links">
-                <li><a href="student/student_dashboard.html">Dashboard</a></li>
-                <li><a href="courses.html">Courses</a></li>
-                <li><a href="wishlist.html">Wishlist</a></li>
-                <li><a href="progress.html">My Progress</a></li>
-                <li><a href="history.html">History</a></li>
-                <li><a href="#" id="logoutBtn" class="btn-secondary">Logout</a></li>
-            </ul>
-        </div>
-    </nav>
+        `;
+    }).join('');
+}
 
-    <div class="dashboard-container">
-        <div class="container">
-            <div class="dashboard-header">
-                <h1>My Learning Dashboard</h1>
-                <p>Welcome back, <span id="studentName">Student</span>!</p>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">📚</div>
-                    <div class="stat-info">
-                        <h3 id="enrolledCourses">0</h3>
-                        <p>Enrolled Courses</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">✅</div>
-                    <div class="stat-info">
-                        <h3 id="completedCourses">0</h3>
-                        <p>Completed</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">⏳</div>
-                    <div class="stat-info">
-                        <h3 id="inProgressCourses">0</h3>
-                        <p>In Progress</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🎓</div>
-                    <div class="stat-info">
-                        <h3 id="certificates">0</h3>
-                        <p>Certificates</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="continue-learning">
-                <h2>Continue Learning</h2>
-                <div id="inProgressList" class="courses-grid">
-                    <!-- In-progress courses will be populated by JavaScript -->
-                </div>
-            </div>
-
-            <div class="recommended-courses">
-                <h2>Recommended For You</h2>
-                <div id="recommendedList" class="courses-grid">
-                    <!-- Recommended courses will be populated by JavaScript -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-bottom">
-                <p>&copy; 2024 E-Learning. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="../js/auth.js"></script>
-    <script src="../js/courses.js"></script>
-    <script src="../js/progress.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-            
-            if (!currentUser.email || currentUser.userType !== 'student') {
-                window.location.href = '../login.html';
-                return;
-            }
-            
-            document.getElementById('studentName').textContent = currentUser.fullName || 'Student';
-            
-            loadDashboardStats();
-            loadInProgressCourses();
-            loadRecommendedCourses();
-        });
-
-        function loadDashboardStats() {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-            const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
-            const userEnrollments = enrollments.filter(e => e.studentEmail === currentUser.email);
-            
-            const completed = userEnrollments.filter(e => e.progress === 100).length;
-            const inProgress = userEnrollments.filter(e => e.progress > 0 && e.progress < 100).length;
-            
-            document.getElementById('enrolledCourses').textContent = userEnrollments.length;
-            document.getElementById('completedCourses').textContent = completed;
-            document.getElementById('inProgressCourses').textContent = inProgress;
-            document.getElementById('certificates').textContent = completed;
-        }
-
-        function loadInProgressCourses() {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-            const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
-            const courses = JSON.parse(localStorage.getItem('courses') || '[]');
-            
-            const inProgress = enrollments.filter(e => 
-                e.studentEmail === currentUser.email && 
-                e.progress > 0 && 
-                e.progress < 100
-            );
-            
-            const container = document.getElementById('inProgressList');
-            
-            if (inProgress.length === 0) {
-                container.innerHTML = '<p class="no-data">No courses in progress. Start learning now!</p>';
-                return;
-            }
-            
-            container.innerHTML = inProgress.slice(0, 3).map(enrollment => {
-                const course = courses.find(c => c.id === enrollment.courseId);
-                if (!course) return '';
-                
-                return `
-                    <div class="course-card">
-                        <div class="course-image">
-                            <img src="${course.image || '../assets/images/default-course.jpg'}" alt="${course.title}">
-                        </div>
-                        <div class="course-content">
-                            <span class="course-category">${course.category}</span>
-                            <h3>${course.title}</h3>
-                            <p class="course-instructor">By ${course.instructor}</p>
-                            <div class="progress-section">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: ${enrollment.progress}%"></div>
-                                </div>
-                                <span class="progress-text">${enrollment.progress}% Complete</span>
-                            </div>
-                            <a href="course-details.html?id=${course.id}" class="btn-primary">Continue</a>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function loadRecommendedCourses() {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-            const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
-            const courses = JSON.parse(localStorage.getItem('courses') || '[]');
-            
-            const enrolledIds = enrollments
-                .filter(e => e.studentEmail === currentUser.email)
-                .map(e => e.courseId);
-            
-            const notEnrolled = courses.filter(c => !enrolledIds.includes(c.id));
-            const container = document.getElementById('recommendedList');
-            
-            if (notEnrolled.length === 0) {
-                container.innerHTML = '<p class="no-data">No recommendations available.</p>';
-                return;
-            }
-            
-            container.innerHTML = notEnrolled.slice(0, 3).map(course => `
-                <div class="course-card">
-                    <div class="course-image">
-                        <img src="${course.image || '../assets/images/default-course.jpg'}" alt="${course.title}">
-                    </div>
-                    <div class="course-content">
-                        <span class="course-category">${course.category}</span>
-                        <h3>${course.title}</h3>
-                        <p class="course-instructor">By ${course.instructor}</p>
-                        <p class="course-price">${course.price > 0 ? '$' + course.price : 'Free'}</p>
-                        <a href="courses.html" class="btn-primary">View Details</a>
-                    </div>
-                </div>
-            `).join('');
-        }
-    </script>
+loadMyCourses();
+</script>
 </body>
 </html>

@@ -1,12 +1,75 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Wish List</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Wishlist - E-Learning</title>
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/student.css">
+<style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
+    h1 { text-align: center; margin-bottom: 30px; color: #333; }
+    .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 20px; }
+    .course-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); position: relative; }
+    .course-card h3 { margin-bottom: 10px; color: #4361ee; }
+    .btn-remove { background: #e63946; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+    .btn-remove:hover { background: #c12c3b; }
+    .btn-details { display: inline-block; margin-top: 10px; color: #4361ee; text-decoration: underline; cursor: pointer; }
+    .no-data { text-align: center; color: #888; font-size: 1.1rem; margin-top: 30px; }
+</style>
 </head>
 <body>
-    <h1> Wish List Page </h1>
-    
-    
+
+<h1>My Wishlist</h1>
+<div id="wishlistContainer" class="courses-grid"></div>
+
+<script type="module">
+import { DB } from "../js/db.js";
+
+const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+if(!currentUser.email || currentUser.type !== 'student'){
+    window.location.href = '../login.html';
+}
+
+const wishlistContainer = document.getElementById('wishlistContainer');
+
+function loadWishlist(){
+    const wishlistData = DB.getWishlist().filter(w => w.studentId === currentUser.id);
+    const courses = DB.getCourses();
+
+    if(wishlistData.length === 0){
+        wishlistContainer.innerHTML = '<p class="no-data">Your wishlist is empty.</p>';
+        return;
+    }
+
+    wishlistContainer.innerHTML = wishlistData.map(item => {
+        const course = courses.find(c => c.id === item.courseId);
+        if(!course) return '';
+        return `
+            <div class="course-card">
+                <h3>${course.title}</h3>
+                <p>Instructor: ${course.instructor || 'Unknown'}</p>
+                <p>Code: ${course.code || ''}</p>
+                <button class="btn-remove" data-id="${course.id}">Remove from Wishlist</button>
+                <a href="course-details.html?id=${course.id}" class="btn-details">View Details</a>
+            </div>
+        `;
+    }).join('');
+
+    // Remove buttons
+    document.querySelectorAll('.btn-remove').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const courseId = btn.dataset.id;
+            let wishlistData = DB.getWishlist();
+            wishlistData = wishlistData.filter(w => !(w.studentId === currentUser.id && w.courseId === courseId));
+            DB.saveWishlist(wishlistData);
+            loadWishlist(); // Refresh
+        });
+    });
+}
+
+loadWishlist();
+</script>
+
 </body>
 </html>
