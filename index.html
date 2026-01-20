@@ -1,34 +1,39 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Learning - Home</title>
-    <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8" />
+  <title>EduPlatform | Learn Anything</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="css/landing.css">
 </head>
 <body>
-    <header>
-        <h1>E-Learning Platform</h1>
-        <nav>
-            <a href="about.html">About</a>
-            <a href="/student/courses.html">Courses</a>
-            <a href="contact.html">Contact</a>
-            <a href="login.html">Login</a>
-            <a href="register.html">Register</a>
-            <a href="/lib/profiles.html">Profile</a>
-        </nav>
-        
-    </header>
-    <main>
-        <section>
-            <h2>Welcome to E-Learning</h2>
-            <p>Learn at your own pace with our wide range of courses.</p>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2026 E-Learning</p>
-    </footer>
-  <script type="module" src="js/auth.js"></script>
+
+<nav class="navbar">
+  <div class="logo">EduPlatform</div>
+  <div class="nav-links">
+    <a href="login.html">Login</a>
+    <a href="register.html" class="btn-signup">Sign Up</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>Learn Anytime, Anywhere</h1>
+  <p>Explore thousands of online courses</p>
+
+  <div class="search-box">
+    <input type="text" placeholder="What do you want to learn?">
+    <button>Search</button>
+  </div>
+</section>
+<section class="featured">
+  <h2>Featured Courses</h2>
+  <div class="course-grid" id="featuredCoursesContainer"></div>
+</section>
+
+<footer class="footer">
+  © 2026 EduPlatform. All rights reserved.
+</footer>
+
+<script type="module" src="js/landing.js"></script>
 </body>
 </html>
