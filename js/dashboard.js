@@ -15,4 +15,25 @@ document.addEventListener("DOMContentLoaded", () => {
   totalCourses.textContent = courses.length;
   totalUsers.textContent = users.length;
   totalEnrollments.textContent = enrollments.length;
+
+
+// take the Admin login from DB
+const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+if (!currentUser) {
+  window.location.href = "../login.html";
+}
+
+// show user name
+const adminNameEl = document.getElementById("adminName");
+adminNameEl.textContent = currentUser.name;
+
+const avatarEl = document.querySelector(".admin-avatar");
+avatarEl.textContent = currentUser.name.charAt(0).toUpperCase();
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  localStorage.removeItem("currentUser");
+  window.location.href = "../index.html";
+});
+
 });
