@@ -1,6 +1,54 @@
 // js/auth.js
 import { User } from "./user.js";
 
+document.addEventListener("DOMContentLoaded", () => {
+  const loginForm = document.getElementById("loginForm");
+  if (!loginForm) return;
+
+  loginForm.addEventListener("submit", e => {
+    e.preventDefault();
+
+    const email = loginEmail.value.trim();
+    const password = loginPassword.value.trim();
+
+    loginEmailError.textContent = "";
+    loginPasswordError.textContent = "";
+    loginSuccess.textContent = "";
+
+    try {
+      const user = User.login(email, password);
+
+      localStorage.setItem("currentUser", JSON.stringify(user));
+
+      loginSuccess.textContent =
+        `Welcome ${user.name}, redirecting...`;
+      loginSuccess.style.color = "green";
+
+      setTimeout(() => {
+        const redirect =
+          localStorage.getItem("redirectAfterLogin");
+
+        if (redirect) {
+          localStorage.removeItem("redirectAfterLogin");
+          window.location.href = redirect;
+          return;
+        }
+
+        if (user.role === "admin") {
+          window.location.href = "admin/dashboard.html";
+        } else {
+          window.location.href = "student/courses.html";
+        }
+      }, 1000);
+
+    } catch (err) {
+      loginPasswordError.textContent = err;
+    }
+  });
+});
+
+/*import { User } from "./user.js";
+
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('loginForm');
   if (!loginForm) return;
@@ -30,15 +78,24 @@ document.addEventListener('DOMContentLoaded', () => {
       loginSuccess.textContent = `Welcome ${user.name}! Redirecting...`;
       loginSuccess.style.color = 'green';
 
-      setTimeout(() => {
-        if (user.role === 'admin') {
-          window.location.href = 'admin/dashboard.html';
-        } else if (user.role === 'student') {
-          window.location.href = 'student/courses.html';
-        } else {
-          alert('Unknown role, cannot redirect!');
+        setTimeout(() => {
+        const redirect = localStorage.getItem("redirectAfterLogin");
+
+        if (redirect) {
+            localStorage.removeItem("redirectAfterLogin");
+            window.location.href = redirect;
+            return;
         }
-      }, 1000);
+
+        if (user.role === 'admin') {
+            window.location.href = 'admin/dashboard.html';
+        } else if (user.role === 'student') {
+            window.location.href = 'student/courses.html';
+        } else {
+            alert('Unknown role, cannot redirect!');
+        }
+        }, 1000);
+
 
     } catch (err) {
       passwordError.textContent = err.toString();
@@ -47,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+*/
 
 /*document.addEventListener('DOMContentLoaded', function() {
 
