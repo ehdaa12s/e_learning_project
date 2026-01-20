@@ -39,6 +39,11 @@
         <div class="success" id="loginSuccess"></div>
 
         <p class="form-footer">
+            <a href="#" id="forgotPassword">Forgot password?</a>
+        </p>
+        <div class="error" id="loginDebug"></div>
+
+        <p class="form-footer">
             Don't have an account? <a href="register.html">Register here</a>
         </p>
     </form>
@@ -48,6 +53,12 @@
 <footer class="LoginFooter">
     <p>© 2026 E-Learning Platform. All rights reserved.</p>
 </footer>
+
+<script>
+  // Configure admin emails; add your real admin emails here.
+  window.__ADMIN_EMAILS = window.__ADMIN_EMAILS || ["admin@example.com"];
+  // Example: window.__ADMIN_EMAILS = ["admin@yourdomain.com", "owner@yourdomain.com"];
+</script>
 
 <script type="module" src="js/auth.js"></script>
 </body>

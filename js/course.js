@@ -1,4 +1,13 @@
-import { DB } from "./db.js";
+import { db } from "./firebase.js";
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDocs,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 export class Course {
   constructor(id, title, instructor, category, price, duration, description, content) {
@@ -12,58 +21,64 @@ export class Course {
     this.content = content;
   }
 
-  static getAll() {
-    return DB.getCourses();
+  static async getAll() {
+    const snap = await getDocs(collection(db, "courses"));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   }
 
-  static create(data) {
-    const courses = DB.getCourses();
-
+  static async create(data) {
     // Required fields
     if (!data.title || !data.instructor || !data.category || !data.duration || !data.description || !data.content) {
       throw "All course fields must be filled!";
     }
-
-    // Price check
     if (data.price < 0) throw "Price cannot be negative!";
 
-    // Duplicate check
-    if (courses.some(c => c.title.toLowerCase() === data.title.toLowerCase())) {
+    const courses = await Course.getAll();
+    if (courses.some(c => (c.title || "").toLowerCase() === data.title.toLowerCase())) {
       throw "Course title already exists!";
     }
 
-    const id = "co" + Date.now();
-    const course = new Course(id, data.title, data.instructor, data.category, data.price, data.duration, data.description, data.content);
-    courses.push(course);
-    DB.saveCourses(courses);
-    return course;
+    const ref = await addDoc(collection(db, "courses"), {
+      title: data.title,
+      instructor: data.instructor,
+      category: data.category,
+      price: Number(data.price) || 0,
+      duration: data.duration,
+      description: data.description,
+      content: data.content,
+      createdAt: Date.now()
+    });
+    return { id: ref.id, ...data };
   }
 
-  static update(id, newData) {
-    const courses = DB.getCourses();
-    const index = courses.findIndex(c => c.id === id);
-    if (index === -1) throw "Course not found";
-
+  static async update(id, newData) {
     if (!newData.title || !newData.instructor || !newData.category || !newData.duration || !newData.description || !newData.content) {
       throw "All course fields must be filled!";
     }
     if (newData.price < 0) throw "Price cannot be negative!";
-    if (courses.some(c => c.title.toLowerCase() === newData.title.toLowerCase() && c.id !== id)) {
+
+    const all = await Course.getAll();
+    if (all.some(c => (c.title || "").toLowerCase() === newData.title.toLowerCase() && c.id !== id)) {
       throw "Course title already exists!";
     }
 
-    courses[index] = { ...courses[index], ...newData };
-    DB.saveCourses(courses);
+    await updateDoc(doc(db, "courses", id), {
+      title: newData.title,
+      instructor: newData.instructor,
+      category: newData.category,
+      price: Number(newData.price) || 0,
+      duration: newData.duration,
+      description: newData.description,
+      content: newData.content
+    });
   }
 
-  static delete(id) {
-    let courses = DB.getCourses();
-    courses = courses.filter(c => c.id !== id);
-    DB.saveCourses(courses);
+  static async delete(id) {
+    await deleteDoc(doc(db, "courses", id));
   }
 
-  static findById(id) {
-    const courses = DB.getCourses();
-    return courses.find(c => c.id === id);
+  static async findById(id) {
+    const snap = await getDoc(doc(db, "courses", id));
+    return snap.exists() ? { id: snap.id, ...snap.data() } : null;
   }
 }

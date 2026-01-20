@@ -1,28 +1,37 @@
-import { DB } from "./db.js";
+import { db } from "./firebase.js";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 export const Enrollment = {
-
-  enroll(userId, courseId) {
-    const enrollments = DB.getEnrollments();
-
-    const exists = enrollments.some(
-      e => e.userId === userId && e.courseId === courseId
+  async enroll(userId, courseId) {
+    const q = query(
+      collection(db, "enrollments"),
+      where("userId", "==", userId),
+      where("courseId", "==", courseId)
     );
-    if (exists) return;
+    const snap = await getDocs(q);
+    if (!snap.empty) return; // already enrolled
 
-    enrollments.push({
-      id: Date.now(),
+    await addDoc(collection(db, "enrollments"), {
       userId,
       courseId,
-      date: new Date().toISOString()
+      status: "approved",
+      createdAt: Date.now()
     });
-
-    DB.saveEnrollments(enrollments);
   },
 
-  isEnrolled(userId, courseId) {
-    return DB.getEnrollments().some(
-      e => e.userId === userId && e.courseId === courseId
+  async isEnrolled(userId, courseId) {
+    const q = query(
+      collection(db, "enrollments"),
+      where("userId", "==", userId),
+      where("courseId", "==", courseId)
     );
+    const snap = await getDocs(q);
+    return !snap.empty;
   }
 };

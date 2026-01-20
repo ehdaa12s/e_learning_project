@@ -1,72 +1,74 @@
-// js/admin.js
-import { DB } from "./db.js";
-import { User } from "./user.js";
+import { db } from "./firebase.js";
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-export class Admin extends User {
-  constructor(id, name, email, password) {
-    super(id, name, email, password, 'admin');
+export class Admin {
+
+  static async createCategory(name, description) {
+    const ref = await addDoc(collection(db, "categories"), {
+      name,
+      description,
+      createdAt: Date.now()
+    });
+    return ref.id;
   }
 
-  static createCategory(name, description) {
-    const categories = DB.getCategories();
-    const id = Date.now();
-    categories.push({ id, name, description });
-    DB.saveCategories(categories);
-    return id;
+  static async updateCategory(id, data) {
+    await updateDoc(doc(db, "categories", id), data);
   }
 
-  static updateCategory(id, newData) {
-    const categories = DB.getCategories();
-    const index = categories.findIndex(c => c.id === id);
-    if(index === -1) throw 'Category not found';
-    categories[index] = { ...categories[index], ...newData };
-    DB.saveCategories(categories);
+  static async deleteCategory(id) {
+    await deleteDoc(doc(db, "categories", id));
   }
 
-  static deleteCategory(id) {
-    const categories = DB.getCategories().filter(c => c.id !== id);
-    DB.saveCategories(categories);
+
+  static async createCourse(data) {
+    const ref = await addDoc(collection(db, "courses"), {
+      ...data,
+      createdAt: Date.now()
+    });
+    return ref.id;
   }
 
-  static createCourse(data) {
-    const courses = DB.getCourses();
-    const id = Date.now();
-    const course = { id, ...data };
-    courses.push(course);
-    DB.saveCourses(courses);
-    return id;
+  static async updateCourse(id, data) {
+    await updateDoc(doc(db, "courses", id), data);
   }
 
-  static updateCourse(id, data) {
-    const courses = DB.getCourses();
-    const index = courses.findIndex(c => c.id === id);
-    if(index === -1) throw 'Course not found';
-    courses[index] = { ...courses[index], ...data };
-    DB.saveCourses(courses);
+  static async deleteCourse(id) {
+    await deleteDoc(doc(db, "courses", id));
   }
 
-  static deleteCourse(id) {
-    const courses = DB.getCourses().filter(c => c.id !== id);
-    DB.saveCourses(courses);
+
+  static async approveEnrollment(id) {
+    await updateDoc(doc(db, "enrollments", id), {
+      status: "approved"
+    });
   }
 
-  static approveEnrollment(enrollmentId) {
-    const enrollments = DB.getEnrollments();
-    const e = enrollments.find(en => en.id === enrollmentId);
-    if(!e) throw 'Enrollment not found';
-    e.status = 'approved';
-    DB.saveEnrollments(enrollments);
+  static async rejectEnrollment(id) {
+    await updateDoc(doc(db, "enrollments", id), {
+      status: "rejected"
+    });
   }
 
-  static rejectEnrollment(enrollmentId) {
-    const enrollments = DB.getEnrollments();
-    const e = enrollments.find(en => en.id === enrollmentId);
-    if(!e) throw 'Enrollment not found';
-    e.status = 'rejected';
-    DB.saveEnrollments(enrollments);
-  }
+  static async viewStudentProgress(studentId) {
+    const q = query(
+      collection(db, "enrollments"),
+      where("studentId", "==", studentId)
+    );
 
-  static viewStudentProgress(studentId) {
-    return DB.getEnrollments().filter(en => en.studentId === studentId);
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    }));
   }
 }

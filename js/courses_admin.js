@@ -1,5 +1,5 @@
 import { Course } from "./course.js";
-import { DB } from "./db.js";
+import { Category } from "./category.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -33,15 +33,14 @@ document.addEventListener("DOMContentLoaded", () => {
   let editingCourseId = null;
 
   /* ===== Categories ===== */
-  const categories = DB.getCategories();
-
-  function fillCategories(select, selectedValue = "") {
+  async function fillCategories(select, selectedValue = "") {
     select.innerHTML = '<option value="">-- Select Category --</option>';
+    const categories = await Category.getAll();
     categories.forEach(cat => {
       const option = document.createElement("option");
-      option.value = cat.name;
-      option.textContent = cat.name;
-      if (cat.name === selectedValue) option.selected = true;
+      option.value = cat.name || "";
+      option.textContent = cat.name || "";
+      if ((cat.name || "") === selectedValue) option.selected = true;
       select.appendChild(option);
     });
   }
@@ -49,8 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
   fillCategories(categorySelect);
 
   /* ===== Render Courses ===== */
-  function renderCourses() {
-    const courses = Course.getAll();
+  async function renderCourses() {
+    const courses = await Course.getAll();
     tableBody.innerHTML = "";
 
     courses.forEach(course => {
@@ -74,8 +73,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* ===== Edit ===== */
     document.querySelectorAll(".editBtn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const course = Course.findById(btn.dataset.id);
+      btn.addEventListener("click", async () => {
+        const course = await Course.findById(btn.dataset.id);
 
         editingCourseId = course.id;
 
@@ -86,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
         editDescription.value = course.description;
         editContent.value = course.content;
 
-        fillCategories(editCategory, course.category);
+        await fillCategories(editCategory, course.category);
 
         editError.textContent = "";
         editModal.classList.remove("hidden");
@@ -95,21 +94,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* ===== Delete ===== */
     document.querySelectorAll(".deleteBtn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        Course.delete(btn.dataset.id);
-        successMsg.textContent = "Course deleted successfully!";
-        errorMsg.textContent = "";
-        renderCourses();
+      btn.addEventListener("click", async () => {
+        try {
+          await Course.delete(btn.dataset.id);
+          successMsg.textContent = "Course deleted successfully!";
+          errorMsg.textContent = "";
+          await renderCourses();
+        } catch (err) {
+          errorMsg.textContent = err;
+          successMsg.textContent = "";
+        }
       });
     });
   }
 
   /* ===== Add Course ===== */
-  addBtn.addEventListener("click", () => {
+  addBtn.addEventListener("click", async () => {
     const title = titleInput.value.trim();
 
-    const duplicate = Course.getAll().find(
-      c => c.title.toLowerCase() === title.toLowerCase()
+    const all = await Course.getAll();
+    const duplicate = all.find(
+      c => (c.title || "").toLowerCase() === title.toLowerCase()
     );
 
     if (duplicate) {
@@ -119,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      Course.create({
+      await Course.create({
         title,
         instructor: instructorInput.value.trim(),
         category: categorySelect.value,
@@ -139,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       successMsg.textContent = "Course added successfully!";
       errorMsg.textContent = "";
-      renderCourses();
+      await renderCourses();
 
     } catch (err) {
       errorMsg.textContent = err;
@@ -148,11 +153,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ===== Save Edit ===== */
-  saveEditBtn.addEventListener("click", () => {
+  saveEditBtn.addEventListener("click", async () => {
     const newTitle = editTitle.value.trim();
 
-    const duplicate = Course.getAll().find(
-      c => c.title.toLowerCase() === newTitle.toLowerCase()
+    const all = await Course.getAll();
+    const duplicate = all.find(
+      c => (c.title || "").toLowerCase() === newTitle.toLowerCase()
         && c.id !== editingCourseId
     );
 
@@ -161,18 +167,22 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    Course.update(editingCourseId, {
-      title: newTitle,
-      instructor: editInstructor.value.trim(),
-      category: editCategory.value,
-      price: Number(editPrice.value),
-      duration: editDuration.value.trim(),
-      description: editDescription.value.trim(),
-      content: editContent.value.trim()
-    });
+    try {
+      await Course.update(editingCourseId, {
+        title: newTitle,
+        instructor: editInstructor.value.trim(),
+        category: editCategory.value,
+        price: Number(editPrice.value),
+        duration: editDuration.value.trim(),
+        description: editDescription.value.trim(),
+        content: editContent.value.trim()
+      });
 
-    editModal.classList.add("hidden");
-    renderCourses();
+      editModal.classList.add("hidden");
+      await renderCourses();
+    } catch (err) {
+      editError.textContent = err;
+    }
   });
 
   cancelEditBtn.addEventListener("click", () => {
