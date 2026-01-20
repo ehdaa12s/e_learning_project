@@ -1,173 +1,125 @@
-// js/auth.js
-import { User } from "./user.js";
+import { auth, db } from "./firebase.js";
+import {
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-document.addEventListener('DOMContentLoaded', () => {
-  const loginForm = document.getElementById('loginForm');
-  if (!loginForm) return;
+import {
+  doc,
+  getDoc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  const emailInput = document.getElementById('loginEmail');
-  const passwordInput = document.getElementById('loginPassword');
-  const emailError = document.getElementById('loginEmailError');
-  const passwordError = document.getElementById('loginPasswordError');
-  const loginSuccess = document.getElementById('loginSuccess');
+document.addEventListener("DOMContentLoaded", () => {
 
-  loginForm.addEventListener('submit', (e) => {
+  const loginForm = document.getElementById("loginForm");
+  const loginEmail = document.getElementById("loginEmail");
+  const loginPassword = document.getElementById("loginPassword");
+  const loginPasswordError = document.getElementById("loginPasswordError");
+  const forgotPassword = document.getElementById("forgotPassword");
+  const loginSuccess = document.getElementById("loginSuccess");
+  const loginDebug = document.getElementById("loginDebug");
+
+  loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    emailError.textContent = '';
-    passwordError.textContent = '';
-    loginSuccess.textContent = '';
+    const email = loginEmail.value.trim();
+    const password = loginPassword.value.trim();
 
-    const email = emailInput.value.trim();
-    const password = passwordInput.value.trim();
-
-    if (!email) { emailError.textContent = 'Email is required'; return; }
-    if (!password) { passwordError.textContent = 'Password is required'; return; }
+    // Clear previous messages
+    if (loginPasswordError) loginPasswordError.textContent = "";
+    if (loginSuccess) loginSuccess.textContent = "";
+    if (loginDebug) loginDebug.textContent = "";
 
     try {
-      const user = User.login(email, password);
+ 
+      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      const uid = userCred.user.uid;
 
-      loginSuccess.textContent = `Welcome ${user.name}! Redirecting...`;
-      loginSuccess.style.color = 'green';
-
-      setTimeout(() => {
-        if (user.role === 'admin') {
-          window.location.href = 'admin/dashboard.html';
-        } else if (user.role === 'student') {
-          window.location.href = 'student/courses.html';
-        } else {
-          alert('Unknown role, cannot redirect!');
+     
+      let userData;
+      const adminEmails = Array.isArray(window.__ADMIN_EMAILS)
+        ? window.__ADMIN_EMAILS.map(e => String(e).toLowerCase().trim())
+        : [];
+      const isAdminEmail = adminEmails.includes(email.toLowerCase());
+      try {
+        const userRef = doc(db, "users", uid);
+        const userSnap = await getDoc(userRef);
+        userData = userSnap.data();
+        if (!userData) {
+          // Auto-provision a basic profile if missing
+          userData = {
+            id: uid,
+            email,
+            name: email.split("@")[0],
+            role: isAdminEmail ? "admin" : "student",
+            createdAt: Date.now()
+          };
+          await setDoc(userRef, userData);
         }
-      }, 1000);
+      } catch (fireErr) {
+        console.warn('[Profile] Firestore error:', fireErr?.code, fireErr?.message);
+        if (loginDebug) loginDebug.textContent = `Profile error: ${fireErr?.code || 'unknown'}`;
+        // Graceful fallback: proceed as student when profile access fails
+        userData = {
+          id: uid,
+          email,
+          name: email.split("@")[0],
+          role: isAdminEmail ? "admin" : "student"
+        };
+      }
+
+      const effectiveRole = userData.role || (isAdminEmail ? "admin" : "student");
+      if (effectiveRole === "admin") {
+        window.location.href = "admin/dashboard.html";
+      } else {
+        window.location.href = "student/courses.html";
+      }
 
     } catch (err) {
-      passwordError.textContent = err.toString();
-      passwordError.style.color = 'red';
+      console.error('[Login] Firebase error:', err?.code, err?.message, err);
+      const msg = err?.code === "auth/invalid-credential"
+        ? "Invalid email or password"
+        : err?.code === "auth/wrong-password"
+        ? "Invalid email or password"
+        : err?.code === "auth/user-not-found"
+        ? "No account found for this email"
+        : err?.code === "auth/too-many-requests"
+        ? "Too many attempts. Try again later."
+        : err?.code === "auth/invalid-api-key"
+        ? "Invalid Firebase config. Check API key."
+        : err?.code === "auth/unauthorized-domain"
+        ? "Unauthorized domain. Add this host in Firebase Auth settings."
+        : err?.code === "auth/network-request-failed"
+        ? "Network error. Check internet connection or CDN access."
+        : err?.code === "auth/operation-not-allowed"
+        ? "Email/Password sign-in is disabled in Firebase."
+        : "Login failed. Please try again.";
+      loginPasswordError.textContent = msg;
+      if (loginDebug) loginDebug.textContent = `[${err?.code || 'no-code'}] ${err?.message || ''}`;
     }
   });
+
+  if (forgotPassword) {
+    forgotPassword.addEventListener('click', async (e) => {
+      e.preventDefault();
+      loginPasswordError.textContent = '';
+      const email = loginEmail.value.trim();
+      if (!email) {
+        loginPasswordError.textContent = 'Enter your email above to reset password';
+        return;
+      }
+      try {
+        await sendPasswordResetEmail(auth, email);
+        document.getElementById('loginSuccess').textContent = 'Password reset email sent. Check your inbox.';
+      } catch (err) {
+        console.error('[Reset] Firebase error:', err?.code, err?.message, err);
+        const msg = err?.code === 'auth/user-not-found' ? 'No account found for this email'
+          : err?.code === 'auth/invalid-email' ? 'Invalid email address'
+          : err?.code === 'auth/too-many-requests' ? 'Too many attempts. Try again later.'
+          : 'Failed to send reset email. Try again.';
+        loginPasswordError.textContent = msg;
+      }
+    });
+  }
 });
-
-
-/*document.addEventListener('DOMContentLoaded', function() {
-
-    // ---------- Register ----------
-    const registerForm = document.getElementById('registerForm');
-
-    if(registerForm){
-        registerForm.addEventListener('submit', function(e){
-            e.preventDefault();
-
-            const name = document.getElementById('registerName').value.trim();
-            const email = document.getElementById('registerEmail').value.trim();
-            const password = document.getElementById('registerPassword').value.trim();
-            const confirmPassword = document.getElementById('confirmPassword').value.trim();
-            const type = document.getElementById('role').value;
-
-            let valid = true;
-
-            // Reset errors
-            const resetErrors = ['registerNameError','registerEmailError','registerPasswordError','confirmPasswordError','registerTypeError'];
-            resetErrors.forEach(id=>{
-                const el = document.getElementById(id);
-                el.textContent = '';
-                el.style.color = 'red'; 
-            });
-
-            document.getElementById('registerSuccess').textContent = '';
-            document.getElementById('registerSuccess').style.color = 'green';
-
-            // Name validation
-            if(name.length < 3){ 
-                document.getElementById('registerNameError').textContent = 'Name must be at least 3 characters';
-                valid = false;
-            }
-
-            // Email validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if(!emailRegex.test(email)){
-                document.getElementById('registerEmailError').textContent = 'Invalid email';
-                valid = false;
-            }
-
-            // Password validation using strong Regex
-            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
-            if(!passwordRegex.test(password)){
-                document.getElementById('registerPasswordError').textContent = 
-                    'Password must be 8+ chars, include uppercase, lowercase, number & special (!@#$%^&*)';
-                valid = false;
-            }
-
-            // Confirm password validation
-            if(password !== confirmPassword){
-                document.getElementById('confirmPasswordError').textContent = 'Passwords do not match';
-                valid = false;
-            }
-
-            // Type validation
-            if(!type){
-                document.getElementById('registerTypeError').textContent = 'Please select user type';
-                valid = false;
-            }
-
-            if(!valid) return;
-
-            // Save user to Local Storage
-            let users = JSON.parse(localStorage.getItem('users')) || [];
-            if(users.some(u => u.email === email)){
-                document.getElementById('registerEmailError').textContent = 'Email already exists';
-                return;
-            }
-
-            const newUser = {
-                id: 'u' + Date.now(),
-                name,
-                email,
-                password,
-                type
-            };
-
-            users.push(newUser);
-            localStorage.setItem('users', JSON.stringify(users));
-
-            document.getElementById('registerSuccess').textContent = 'Registered successfully! You can login now.';
-            registerForm.reset();
-        });
-    }
-
-    // ---------- Login ----------
-    const loginForm = document.getElementById('loginForm');
-
-    if(loginForm){
-        loginForm.addEventListener('submit', function(e){
-            e.preventDefault();
-
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
-
-            let users = JSON.parse(localStorage.getItem('users')) || [];
-            const user = users.find(u => u.email === email && u.password === password);
-
-            // Reset messages
-            document.getElementById('loginEmailError').textContent = '';
-            document.getElementById('loginPasswordError').textContent = '';
-            document.getElementById('loginSuccess').textContent = '';
-            document.getElementById('loginEmailError').style.color = 'red';
-            document.getElementById('loginPasswordError').style.color = 'red';
-
-            if(!user){
-                document.getElementById('loginPasswordError').textContent = 'Invalid email or password';
-                return;
-            }
-
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            document.getElementById('loginSuccess').textContent = 'Login successful! Redirecting...';
-            document.getElementById('loginSuccess').style.color = 'green';
-
-            setTimeout(()=>{
-                if(user.type === 'admin') window.location.href = 'admin/dashboard.html';
-                else window.location.href = 'student/dashboard.html';
-            }, 1000);
-        });
-    }
-
-});*/

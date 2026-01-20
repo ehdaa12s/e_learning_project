@@ -1,4 +1,13 @@
-import { DB } from "./db.js";
+import { db } from "./firebase.js";
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDocs,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 export class Category {
   constructor(id, name, description = "") {
@@ -7,41 +16,36 @@ export class Category {
     this.description = description;
   }
 
-  static getAll() {
-    return DB.getCategories();
+  static async getAll() {
+    const snap = await getDocs(collection(db, "categories"));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   }
 
-  static create(name, description = "") {
-    const categories = DB.getCategories();
-
-    if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+  static async create(name, description = "") {
+    const categories = await Category.getAll();
+    if (categories.some(c => (c.name || "").toLowerCase() === name.toLowerCase())) {
       throw "Category name already exists!";
     }
-
-    const id = "c" + Date.now();
-    const category = new Category(id, name, description);
-    categories.push(category);
-    DB.saveCategories(categories);
-    return category;
+    const ref = await addDoc(collection(db, "categories"), {
+      name,
+      description,
+      createdAt: Date.now()
+    });
+    return { id: ref.id, name, description };
   }
 
-  static update(id, newData) {
-    const categories = DB.getCategories();
-    const index = categories.findIndex(c => c.id === id);
-    if (index === -1) throw "Category not found";
-
-    categories[index] = { ...categories[index], ...newData };
-    DB.saveCategories(categories);
+  static async update(id, newData) {
+    const snap = await getDoc(doc(db, "categories", id));
+    if (!snap.exists()) throw "Category not found";
+    await updateDoc(doc(db, "categories", id), newData);
   }
 
-  static delete(id) {
-    let categories = DB.getCategories();
-    categories = categories.filter(c => c.id !== id);
-    DB.saveCategories(categories);
+  static async delete(id) {
+    await deleteDoc(doc(db, "categories", id));
   }
 
-  static findById(id) {
-    const categories = DB.getCategories();
-    return categories.find(c => c.id === id);
+  static async findById(id) {
+    const snap = await getDoc(doc(db, "categories", id));
+    return snap.exists() ? { id: snap.id, ...snap.data() } : null;
   }
 }

@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -17,17 +17,27 @@
     <p><strong>Price:</strong> <span id="coursePrice"></span></p>
     <p><strong>Description:</strong> <span id="courseDescription"></span></p>
     <p><strong>Content:</strong> <a href="#" id="courseContentLink" target="_blank">View Content</a></p>
+    <div id="paymentContainer"></div>
   </div>
 
+  <script>
+    window.__PAYPAL_CLIENT_ID = window.__PAYPAL_CLIENT_ID || 'YOUR_PAYPAL_CLIENT_ID';
+  </script>
   <script type="module">
-    import { Course } from "./course.js";
+    import { auth, db } from "../js/firebase.js";
+    import { doc, getDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { setupPaymentUI } from "../js/payment.js";
 
     const urlParams = new URLSearchParams(window.location.search);
     const courseId = urlParams.get("id");
 
-    const course = Course.findById(courseId);
-
-    if (course) {
+    async function loadCourse() {
+      const snap = await getDoc(doc(db, 'courses', courseId));
+      if (!snap.exists()) {
+        document.getElementById('courseTitle').textContent = 'Course Not Found';
+        return;
+      }
+      const course = { id: snap.id, ...snap.data() };
       document.getElementById("courseTitle").textContent = course.title;
       document.getElementById("courseInstructor").textContent = course.instructor;
       document.getElementById("courseCategory").textContent = course.category;
@@ -35,9 +45,18 @@
       document.getElementById("coursePrice").textContent = course.price > 0 ? "$" + course.price : "Free";
       document.getElementById("courseDescription").textContent = course.description;
       document.getElementById("courseContentLink").href = course.content;
-    } else {
-      document.getElementById("courseTitle").textContent = "Course Not Found";
+
+      const containerId = 'paymentContainer';
+      const user = auth.currentUser;
+      if (!user) {
+        document.getElementById(containerId).innerHTML = '<div class="error">Please login to enroll or buy</div>';
+        return;
+      }
+      const clientId = window.__PAYPAL_CLIENT_ID;
+      await setupPaymentUI({ containerId, course, paypalClientId: clientId });
     }
+
+    loadCourse();
   </script>
 </body>
-</html> -->
+</html>

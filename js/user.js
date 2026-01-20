@@ -1,5 +1,15 @@
 // js/user.js
-import { DB } from "./db.js";
+import { auth, db } from "./firebase.js";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  doc,
+  setDoc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 export class User {
   constructor(id, name, email, password, role = 'student') {
@@ -10,28 +20,32 @@ export class User {
     this.role = role; // لازم يكون role مش type
   }
 
-  static register(name, email, password, role = 'student') {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    if (users.some(u => u.email === email)) throw 'Email already exists';
-    const id = 'u' + Date.now();
-    const user = { id, name, email, password, role }; // role هنا
-    users.push(user);
-    localStorage.setItem('users', JSON.stringify(users));
-    return user;
+  static async register(name, email, password, role = 'student') {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = cred.user.uid;
+    await setDoc(doc(db, 'users', uid), {
+      id: uid,
+      name,
+      email,
+      role,
+      createdAt: Date.now()
+    });
+    return { id: uid, name, email, role };
   }
 
-  static login(email, password) {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const user = users.find(u => u.email === email && u.password === password);
-    if (!user) throw 'Invalid email or password';
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    return user;
+  static async login(email, password) {
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    const uid = cred.user.uid;
+    const snap = await getDoc(doc(db, 'users', uid));
+    const data = snap.exists() ? snap.data() : null;
+    if (!data) throw 'User data not found';
+    return data;
   }
-  static logout() {
-    localStorage.removeItem('currentUser');
+  static async logout() {
+    await signOut(auth);
   }
 
   static currentUser() {
-    return JSON.parse(localStorage.getItem('currentUser'));
+    return auth.currentUser;
   }
 }
