@@ -7,7 +7,7 @@
   --radius: 14px;
 }
 
-/* ================= GENERAL ================= */
+/*  GENERAL  */
 * {
   box-sizing: border-box;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -19,7 +19,7 @@ body {
   color: var(--text);
 }
 
-/* ================= HEADER ================= */
+/*  HEADER  */
 .admin-header {
   display: flex;
   justify-content: space-between;
@@ -71,7 +71,7 @@ body {
   color: #fff;
 }
 
-/* ================= CONTAINER ================= */
+/*  CONTAINER  */
 .container {
   padding: 40px;
 }
@@ -80,7 +80,7 @@ body {
   margin-bottom: 25px;
 }
 
-/* ================= DASHBOARD CARDS ================= */
+/*  DASHBOARD CARDS  */
 .dashboard-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -120,7 +120,7 @@ body {
   opacity: 0.9;
 }
 
-/* ================= FORM (ADD / MANAGE) ================= */
+/*  FORM (ADD / MANAGE)  */
 .form-group {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -146,7 +146,7 @@ body {
   min-height: 100px;
 }
 
-/* ADD / BACK / LOGOUT BUTTONS (ارجع زي ما كان) */
+/* ADD / BACK / LOGOUT BUTTONS */
 #addCategoryBtn,
 #addCourseBtn,
 .logoutBtn {
@@ -166,7 +166,7 @@ body {
   background: #6c72ff;
 }
 
-/* ================= TABLES ================= */
+/*  TABLES  */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -193,7 +193,7 @@ tr:hover {
   background: #f9f9ff;
 }
 
-/* ================= EDIT / DELETE BUTTONS ================= */
+/*  EDIT / DELETE BUTTONS  */
 table button.edit-btn,
 table button.delete-btn {
   padding: 6px 12px;
@@ -223,7 +223,7 @@ table button.delete-btn:hover {
   opacity: 0.9;
 }
 
-/* ================= MESSAGES ================= */
+/*  MESSAGES  */
 .error {
   color: red;
   margin-bottom: 10px;
@@ -234,7 +234,7 @@ table button.delete-btn:hover {
   margin-bottom: 10px;
 }
 
-/* ================= MODAL ================= */
+/*  MODAL  */
 .modal {
   position: fixed;
   inset: 0;

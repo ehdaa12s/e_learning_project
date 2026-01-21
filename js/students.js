@@ -1,4 +1,4 @@
-import { DB } from "../js/db.js";   // تأكد المسار صحيح حسب مكان students.js
+import { DB } from "../js/db.js";   
 import { User } from "../js/user.js";
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -6,14 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const studentsCountEl = document.getElementById('studentsCount');
   const backBtn = document.getElementById('backDashboardBtn');
 
-  // جلب كل المستخدمين من LocalStorage
+  // take all user from localstorage
   const users = DB.getUsers();
   const students = users.filter(u => u.role === 'student');
 
-  // عرض عدد الطلاب
+  // show the student only
   studentsCountEl.textContent = `Total Students: ${students.length}`;
 
-  // عرض الطلاب في الجدول
+  // show the student in table
   students.forEach(student => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     studentsTableBody.appendChild(tr);
   });
 
-  // زر العودة للداشبورد
+ 
   backBtn.addEventListener('click', () => {
     window.location.href = 'dashboard.html';
   });

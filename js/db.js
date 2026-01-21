@@ -11,7 +11,7 @@ export const DB = {
   getEnrollments: () => JSON.parse(localStorage.getItem('enrollments')) || [],
   saveEnrollments: enrollments => localStorage.setItem('enrollments', JSON.stringify(enrollments)),
 
-  // ------------------ Wishlist ------------------
+  // Wishlist 
   getWishlist: () => JSON.parse(localStorage.getItem('wishlist')) || {},
   saveWishlist: wishlist => localStorage.setItem('wishlist', JSON.stringify(wishlist)),
 
@@ -30,7 +30,6 @@ export const DB = {
     wishlist[studentId] = wishlist[studentId].filter(id => id !== courseId);
     DB.saveWishlist(wishlist);
   },
-  // --------------------------------------------
 
   getPayments: () => JSON.parse(localStorage.getItem('payments')) || [],
   savePayments: payments => localStorage.setItem('payments', JSON.stringify(payments)),

@@ -7,14 +7,14 @@ export class User {
     this.name = name;
     this.email = email;
     this.password = password;
-    this.role = role; // لازم يكون role مش type
+    this.role = role; 
   }
 
   static register(name, email, password, role = 'student') {
     const users = JSON.parse(localStorage.getItem('users')) || [];
     if (users.some(u => u.email === email)) throw 'Email already exists';
     const id = 'u' + Date.now();
-    const user = { id, name, email, password, role }; // role هنا
+    const user = { id, name, email, password, role }; 
     users.push(user);
     localStorage.setItem('users', JSON.stringify(users));
     return user;

@@ -3,7 +3,7 @@ import { DB } from "./db.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* ===== Add Form ===== */
+  // Add Form 
   const titleInput = document.getElementById("courseTitle");
   const instructorInput = document.getElementById("courseInstructor");
   const categorySelect = document.getElementById("courseCategory");
@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const errorMsg = document.getElementById("courseError");
   const successMsg = document.getElementById("courseSuccess");
 
-  /* ===== Edit Modal ===== */
+  // Edit Modal 
   const editModal = document.getElementById("editModal");
   const editTitle = document.getElementById("editTitle");
   const editInstructor = document.getElementById("editInstructor");
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let editingCourseId = null;
 
-  /* ===== Categories ===== */
+  // Categories 
   const categories = DB.getCategories();
 
   function fillCategories(select, selectedValue = "") {
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   fillCategories(categorySelect);
 
-  /* ===== Render Courses ===== */
+  // Render Courses
   function renderCourses() {
     const courses = Course.getAll();
     tableBody.innerHTML = "";
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
       tableBody.appendChild(tr);
     });
 
-    /* ===== Edit ===== */
+    // Edit  
     document.querySelectorAll(".editBtn").forEach(btn => {
       btn.addEventListener("click", () => {
         const course = Course.findById(btn.dataset.id);
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    /* ===== Delete ===== */
+    // Delete 
     document.querySelectorAll(".deleteBtn").forEach(btn => {
       btn.addEventListener("click", () => {
         Course.delete(btn.dataset.id);
@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* ===== Add Course ===== */
+  // Add Course 
   addBtn.addEventListener("click", () => {
     const title = titleInput.value.trim();
 
@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* ===== Save Edit ===== */
+  //save Edit
   saveEditBtn.addEventListener("click", () => {
     const newTitle = editTitle.value.trim();
 

@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalCard = document.getElementById("modalCard");
   const closeBtn = document.querySelector(".close-btn");
 
-  // ================= Auth =================
+  // Auth 
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   if (!currentUser || currentUser.role !== "student") {
     window.location.href = "../login.html";
@@ -15,10 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   studentNameEl.textContent = currentUser.name;
 
-  // ================= Data =================
   const courses = DB.getCourses();
 
-  // ✅ المصدر الصح
+  // check the correct source
   const enrolledCourseIds =
     JSON.parse(localStorage.getItem("enrollments_" + currentUser.id)) || [];
 
@@ -28,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // ================= Render =================
+  // Render 
   myCoursesContainer.innerHTML = enrolledCourseIds.map(courseId => {
     const course = courses.find(c => c.id === courseId);
     if (!course) return "";
@@ -47,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   }).join("");
 
-  // ================= Modal =================
+  // Modal 
   window.viewCourse = function(courseId) {
     const course = courses.find(c => c.id === courseId);
     if (!course) return;
@@ -69,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.classList.add("hidden");
   });
 
-  // ================= Logout =================
+  // Logout 
   document.getElementById("logoutBtn").addEventListener("click", () => {
     localStorage.removeItem("currentUser");
     window.location.href = "../index.html";

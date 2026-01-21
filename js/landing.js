@@ -4,7 +4,7 @@ const featuredCoursesContainer = document.getElementById("featuredCoursesContain
 const searchInput = document.querySelector(".search-box input");
 const searchBtn = document.querySelector(".search-box button");
 
-// عرض الكورسات، مع خيار فلترة
+// show courses
 function renderCourses(courses) {
   featuredCoursesContainer.innerHTML = "";
 
@@ -25,7 +25,7 @@ function renderCourses(courses) {
       </p>
     `;
 
-    // أي كليك يروح مباشرة على Login
+    
     card.addEventListener("click", () => {
       window.location.href = "login.html";
     });
@@ -34,7 +34,7 @@ function renderCourses(courses) {
   });
 }
 
-// أول عرض: كل الكورسات (أو أول 8)
+// take 8 courses
 renderCourses(Course.getAll().slice(0, 8));
 
 // Search functionality

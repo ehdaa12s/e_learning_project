@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalCard = document.getElementById("modalCard");
   const closeBtn = document.querySelector(".close-btn");
 
-  // ================= Auth =================
+  //  Auth 
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   if (!currentUser || currentUser.role !== "student") {
     window.location.href = "../login.html";
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   studentNameEls.forEach(el => el.textContent = currentUser.name);
 
-  // ================= Data =================
+  //  Data 
   const courses = DB.getCourses();
   const enrollments = JSON.parse(localStorage.getItem("enrollments_" + currentUser.id)) || [];
 
@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return courses.find(c => c.id === courseId);
   }).filter(c => c); // remove null if course not found
 
-  // ================= Stats =================
+  //  Stats 
   const totalEnrolled = myCourses.length;
   const totalCompleted = myCourses.filter((c, i) => {
     const progress = JSON.parse(localStorage.getItem("progress_" + currentUser.id + "_" + c.id)) || 0;
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   completedCoursesEl.textContent = totalCompleted;
   inProgressCoursesEl.textContent = totalInProgress;
 
-  // ================= Render Courses =================
+  //  Render Courses 
   if (myCourses.length === 0) {
     myCoursesContainer.innerHTML = `<p class="no-data">You have not enrolled in any courses yet.</p>`;
   } else {
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }).join("");
   }
 
-  // ================= Modal =================
+  //  Modal 
   window.viewCourse = function(courseId) {
     const course = courses.find(c => c.id === courseId);
     if (!course) return;
@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
 
-  // ================= Logout =================
+  //  Logout 
   document.getElementById("logoutBtn").addEventListener("click", () => {
     localStorage.removeItem("currentUser");
     window.location.href = "../index.html";

@@ -1,4 +1,4 @@
-/* ---------------- General ---------------- */
+/*  General  */
 body {
     font-family: 'Segoe UI', sans-serif;
     background: #f0f2f5;
@@ -13,7 +13,7 @@ body {
     margin: 20px auto;
 }
 
-/* ---------------- Header ---------------- */
+/*  Header  */
 .student-header {
     background: #3f37c9;
     color: white;
@@ -54,7 +54,7 @@ body {
     background: #d21866;
 }
 
-/* ---------------- Page Header ---------------- */
+/*  Page Header  */
 .page-header {
     text-align: center;
     margin: 25px 0 15px 0;
@@ -94,7 +94,7 @@ body {
     border-color: #4361ee;
 }
 
-/* ---------------- Courses Grid ---------------- */
+/*  Courses Grid  */
 .courses-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -102,7 +102,7 @@ body {
     margin-top: 20px;
 }
 
-/* ---------------- Course Card ---------------- */
+/*  Course Card  */
 .course-card {
     background: white;
     border-radius: 12px;
@@ -132,7 +132,7 @@ body {
     color: #555;
 }
 
-/* ---------------- Badge ---------------- */
+/*  Badge  */
 .badge {
     position: absolute;
     top: 12px;
@@ -145,7 +145,7 @@ body {
     font-weight: bold;
 }
 
-/* ---------------- Buttons ---------------- */
+/*  Buttons  */
 .course-card button,
 .course-card a.btn-details {
     margin-top: 10px;
@@ -187,7 +187,7 @@ body {
     background: #2e2bb5;
 }
 
-/* ---------------- Modal ---------------- */
+/*  Modal  */
 .course-modal {
     position: fixed;
     top: 0;
@@ -249,7 +249,7 @@ body {
     color: #333;
 }
 
-/* ---------------- Modal Actions ---------------- */
+/*  Modal Actions  */
 .course-modal .modal-actions {
     display: flex;
     justify-content: flex-end;
@@ -290,13 +290,13 @@ body {
     background: #d21866;
 }
 
-/* ---------------- Animations ---------------- */
+/*  Animations  */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px);}
     to { opacity: 1; transform: translateY(0);}
 }
 
-/* ---------------- Footer ---------------- */
+/*  Footer  */
 .site-footer {
     text-align: center;
     padding: 20px 0;
