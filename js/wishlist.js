@@ -5,6 +5,7 @@ const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 if (!currentUser || currentUser.role !== "student") {
     window.location.href = '../login.html';
 }
+  
 
 function renderWishlist(){
     const wishlist = JSON.parse(localStorage.getItem('wishlist_' + currentUser.id)) || [];
@@ -16,7 +17,8 @@ function renderWishlist(){
         wishlistContainer.innerHTML = '<p class="no-data">Your wishlist is empty.</p>';
         return;
     }
-
+    const studentNameEl = document.getElementById("studentName");
+    studentNameEl.textContent = currentUser.name;
     wishlist.forEach(id => {
         const course = courses.find(c => c.id === id);
         if(!course) return;

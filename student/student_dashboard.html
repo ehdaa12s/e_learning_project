@@ -3,123 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Dashboard</title>
-<link rel="stylesheet" href="../css/style.css">
+<title>Student Dashboard | EduPlatform</title>
 <link rel="stylesheet" href="../css/student.css">
 </head>
 <body>
+
 <header class="student-header">
   <div class="logo">EduPlatform</div>
   <nav>
     <a href="courses.html">Courses</a>
     <a href="wishlist.html">Wishlist</a>
     <a href="my_courses.html">My Courses</a>
-    <span id="studentNameHeader">Student</span>
+    <span class="student-name" id="studentName">Student</span>
     <button id="logoutBtn">Logout</button>
   </nav>
 </header>
 
-<main>
-  <h1>Welcome, <span id="studentNameText">Student</span> 👋</h1>
+<div class="container">
+  <h1>Welcome, <span id="studentNameDisplay">Student</span> 👋</h1>
 
-  <section class="stats">
-    <div class="stat-card">
-      <h3 id="totalCourses">0</h3>
+  <div class="dashboard-cards">
+    <div class="card">
       <p>Enrolled Courses</p>
+      <h2 id="enrolledCourses">0</h2>
     </div>
-    <div class="stat-card">
-      <h3 id="completedCourses">0</h3>
-      <p>Completed</p>
+    <div class="card">
+        <p>Completed</p>
+      <h2 id="completedCourses">0</h2>
+      
     </div>
-    <div class="stat-card">
-      <h3 id="inProgressCourses">0</h3>
+    <div class="card">
       <p>In Progress</p>
+      <h2 id="inProgressCourses">0</h2>
     </div>
-  </section>
+  </div>
 
   <h2>My Courses</h2>
-  <div id="myCoursesContainer" class="courses-grid"></div>
-</main>
+  <div class="courses-grid" id="myCoursesContainer"></div>
+</div>
 
-<script type="module">
-import { DB } from "../js/courses.js"; // نفس ملف DB اللي عندك
+<!-- Modal for course details -->
+<div id="courseModal" class="course-modal hidden">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <div id="modalCard"></div>
+  </div>
+</div>
 
-// ===== Current User =====
-const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-if(!currentUser || currentUser.role !== "student") {
-    window.location.href = '../login.html';
-}
-
-document.getElementById('studentNameText').textContent = currentUser.name || 'Student';
-document.getElementById('studentNameHeader').textContent = currentUser.name || 'Student';
-
-// ===== Load Enrollments for current user =====
-let allEnrollments = DB.getEnrollments();
-let myEnrollments = allEnrollments.filter(e => e.studentId === currentUser.id);
-
-let courses = DB.getCourses();
-const container = document.getElementById('myCoursesContainer');
-
-// ===== Stats =====
-const completedCount = myEnrollments.filter(e => e.progress === 100).length;
-document.getElementById('totalCourses').textContent = myEnrollments.length;
-document.getElementById('completedCourses').textContent = completedCount;
-document.getElementById('inProgressCourses').textContent = myEnrollments.length - completedCount;
-
-// ===== Display Courses =====
-if(myEnrollments.length === 0){
-    container.innerHTML = '<p class="no-data">You have not enrolled in any courses yet.</p>';
-} else {
-    container.innerHTML = myEnrollments.map(e => {
-        const course = courses.find(c => c.id === e.courseId);
-        if(!course) return '';
-
-        return `
-        <div class="course-card">
-            <h3>${course.title}</h3>
-            <p><strong>Instructor:</strong> ${course.instructor || 'Unknown'}</p>
-            <p><strong>Category:</strong> ${course.category}</p>
-            <p><strong>Duration:</strong> ${course.duration}</p>
-            <div class="progress-bar">
-              <div class="progress-fill" style="width:${e.progress || 0}%"></div>
-            </div>
-            <small>${e.progress || 0}% completed</small>
-
-            <div class="materials">
-              <h4>Materials:</h4>
-              <ul>
-                ${course.content ? `<li><a href="${course.content}" target="_blank">View Content</a></li>` : '<li>No materials</li>'}
-              </ul>
-            </div>
-
-            <div class="course-actions">
-              <button class="btn-primary" onclick="updateProgress(${course.id}, ${e.progress || 0})">
-                ${e.progress === 100 ? 'Review Course' : 'Continue Learning'}
-              </button>
-            </div>
-        </div>
-        `;
-    }).join('');
-}
-
-// ===== Update Progress =====
-window.updateProgress = function(courseId, currentProgress){
-    let newProgress = parseInt(prompt("Enter your progress (0-100):", currentProgress));
-    if(isNaN(newProgress) || newProgress < 0 || newProgress > 100) return alert("Enter a valid number 0-100");
-
-    const idx = allEnrollments.findIndex(e => e.studentId === currentUser.id && e.courseId === courseId);
-    if(idx !== -1){
-        allEnrollments[idx].progress = newProgress;
-        localStorage.setItem('enrollments', JSON.stringify(allEnrollments));
-        location.reload();
-    }
-}
-
-// ===== Logout =====
-document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.removeItem('currentUser');
-    window.location.href = '../login.html';
-});
-</script>
+<script type="module" src="../js/studentDashbord.js"></script>
 </body>
 </html>
