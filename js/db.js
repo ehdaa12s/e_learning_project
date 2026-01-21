@@ -10,16 +10,34 @@ export const DB = {
 
   getEnrollments: () => JSON.parse(localStorage.getItem('enrollments')) || [],
   saveEnrollments: enrollments => localStorage.setItem('enrollments', JSON.stringify(enrollments)),
-  
-  getWishlist: () => JSON.parse(localStorage.getItem('wishlist')) || [],
-  saveWishlist: (wishlist) => localStorage.setItem('wishlist', JSON.stringify(wishlist)),
+
+  // ------------------ Wishlist ------------------
+  getWishlist: () => JSON.parse(localStorage.getItem('wishlist')) || {},
+  saveWishlist: wishlist => localStorage.setItem('wishlist', JSON.stringify(wishlist)),
+
+  addToWishlist: (studentId, courseId) => {
+    const wishlist = DB.getWishlist();
+    if (!wishlist[studentId]) wishlist[studentId] = [];
+    if (!wishlist[studentId].includes(courseId)) {
+      wishlist[studentId].push(courseId);
+      DB.saveWishlist(wishlist);
+    }
+  },
+
+  removeFromWishlist: (studentId, courseId) => {
+    const wishlist = DB.getWishlist();
+    if (!wishlist[studentId]) return;
+    wishlist[studentId] = wishlist[studentId].filter(id => id !== courseId);
+    DB.saveWishlist(wishlist);
+  },
+  // --------------------------------------------
 
   getPayments: () => JSON.parse(localStorage.getItem('payments')) || [],
-  savePayments: (payments) => localStorage.setItem('payments', JSON.stringify(payments)),
+  savePayments: payments => localStorage.setItem('payments', JSON.stringify(payments)),
 
   getFeedback: () => JSON.parse(localStorage.getItem('feedback')) || [],
-  saveFeedback: (feedback) => localStorage.setItem('feedback', JSON.stringify(feedback)),
+  saveFeedback: feedback => localStorage.setItem('feedback', JSON.stringify(feedback)),
 
   getCertificates: () => JSON.parse(localStorage.getItem('certificates')) || [],
-  saveCertificates: (certificates) => localStorage.setItem('certificates', JSON.stringify(certificates)),
+  saveCertificates: certificates => localStorage.setItem('certificates', JSON.stringify(certificates)),
 };

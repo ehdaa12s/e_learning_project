@@ -26,6 +26,7 @@ export class Course {
 
     // Price check
     if (data.price < 0) throw "Price cannot be negative!";
+    if (data.duration < 0) throw "duration cannot be negative!";
 
     // Duplicate check
     if (courses.some(c => c.title.toLowerCase() === data.title.toLowerCase())) {
@@ -67,3 +68,5 @@ export class Course {
     return courses.find(c => c.id === id);
   }
 }
+
+

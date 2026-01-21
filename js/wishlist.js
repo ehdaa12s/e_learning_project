@@ -1,43 +1,58 @@
-// js/wishlist.js
 import { DB } from "./db.js";
-import { User } from "./user.js";
 
-export class Wishlist {
-  constructor(studentId) {
-    this.studentId = studentId;
-    this.courseIds = this.loadWishlist();
-  }
-
-  loadWishlist() {
-    const wishlistData = DB.getWishlist();
-    return wishlistData[this.studentId] || [];
-  }
-
-  saveWishlist() {
-    const wishlistData = DB.getWishlist();
-    wishlistData[this.studentId] = this.courseIds;
-    DB.saveWishlist(wishlistData);
-  }
-
-  addCourse(courseId) {
-    if (!this.courseIds.includes(courseId)) {
-      this.courseIds.push(courseId);
-      this.saveWishlist();
-    }
-  }
-
-  removeCourse(courseId) {
-    this.courseIds = this.courseIds.filter(id => id !== courseId);
-    this.saveWishlist();
-  }
-
-  getWishlist() {
-    return this.courseIds;
-  }
-
-  static getCurrentStudentWishlist() {
-    const user = User.currentUser();
-    if (!user) throw 'Login required';
-    return new Wishlist(user.id).getWishlist();
-  }
+const wishlistContainer = document.getElementById("wishlistContainer");
+const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+if (!currentUser || currentUser.role !== "student") {
+    window.location.href = '../login.html';
 }
+
+function renderWishlist(){
+    const wishlist = JSON.parse(localStorage.getItem('wishlist_' + currentUser.id)) || [];
+    const courses = DB.getCourses();
+
+    wishlistContainer.innerHTML = "";
+
+    if(wishlist.length === 0){
+        wishlistContainer.innerHTML = '<p class="no-data">Your wishlist is empty.</p>';
+        return;
+    }
+
+    wishlist.forEach(id => {
+        const course = courses.find(c => c.id === id);
+        if(!course) return;
+
+        const card = document.createElement("div");
+        card.className = "course-card";
+
+        card.innerHTML = `
+            <h3>${course.title}</h3>
+            <p>${course.duration}</p>
+            <p>${course.description.slice(0,80)}...</p>
+            <button class="btn-remove" onclick="toggleWishlist('${course.id}')">Remove from Wishlist</button>
+            <button class="btn-details" onclick="viewDetails('${course.id}')">View Details</button>
+        `;
+
+        wishlistContainer.appendChild(card);
+    });
+}
+
+window.toggleWishlist = function(courseId) {
+    let wishlist = JSON.parse(
+        localStorage.getItem('wishlist_' + currentUser.id)
+    ) || [];
+
+    // remove course from whitlist
+    wishlist = wishlist.filter(id => id !== courseId);
+
+    // store the editing 
+    localStorage.setItem(
+        'wishlist_' + currentUser.id,
+        JSON.stringify(wishlist)
+    );
+
+    // update page
+    renderWishlist();
+};
+
+window.renderWishlist = renderWishlist;
+renderWishlist();

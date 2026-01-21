@@ -11,9 +11,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const users = DB.getUsers();
   const enrollments = DB.getEnrollments();
 
+
+  const students = users.filter(u =>
+  u.role && u.role.toLowerCase() === "student"
+);
   totalCategories.textContent = categories.length;
   totalCourses.textContent = courses.length;
-  totalUsers.textContent = users.length;
+  totalUsers.textContent = students.length;
   totalEnrollments.textContent = enrollments.length;
 
 

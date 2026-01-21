@@ -1,107 +1,105 @@
-import { Course } from "./course.js";
 import { DB } from "./db.js";
 
+const coursesContainer = document.getElementById("coursesContainer");
+const searchInput = document.getElementById("searchInput");
+const filterCategory = document.getElementById("filterCategory");
+const courseModal = document.getElementById("courseModal");
+const modalCard = document.getElementById("modalCard");
+const closeModalBtn = courseModal.querySelector(".close-btn");
+
 const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+if(!currentUser || currentUser.role !== "student") {
+    window.location.href = '../login.html';
+}
 
-document.addEventListener("DOMContentLoaded", () => {
-  const coursesContainer = document.getElementById("coursesContainer");
+// Load wishlist & enrollments
+let wishlist = JSON.parse(localStorage.getItem('wishlist_' + currentUser.id)) || [];
+let enrolled = JSON.parse(localStorage.getItem('enrollments_' + currentUser.id)) || [];
 
-  const courses = Course.getAll();
+// ---------------- Render Courses ----------------
+function renderCourses() {
+    const courses = DB.getCourses();
+    if(!courses || courses.length === 0){
+        coursesContainer.innerHTML = '<p class="no-data">No courses available.</p>';
+        return;
+    }
 
-  function renderCourses() {
+    let filtered = courses.filter(c => c.title.toLowerCase().includes(searchInput.value.toLowerCase()));
+    if(filterCategory.value) {
+        filtered = filtered.filter(c => c.category === filterCategory.value);
+    }
+
     coursesContainer.innerHTML = "";
+    filtered.forEach(course => {
+        const isInWishlist = wishlist.includes(course.id);
+        const isEnrolled = enrolled.includes(course.id);
 
-    courses.forEach(course => {
-      const card = document.createElement("div");
-      card.classList.add("course-card");
-
-      const isEnrolled = currentUser 
-        ? DB.getEnrollments().some(e => e.courseId === course.id && e.userId === currentUser.id)
-        : false;
-
-      // Badge "Enrolled"
-      const badge = isEnrolled ? `<div class="badge">Enrolled</div>` : "";
-
-      card.innerHTML = `
-        ${badge}
-        <h3>${course.title}</h3>
-        <p class="duration">${course.duration}</p>
-        <p class="short-desc">${course.description.slice(0, 80)}...</p>
-        <button class="details-btn">View Details</button>
-      `;
-
-      coursesContainer.appendChild(card);
-
-      const detailsBtn = card.querySelector(".details-btn");
-      detailsBtn.addEventListener("click", () => openModal(course, isEnrolled));
+        const card = document.createElement("div");
+        card.className = "course-card";
+        card.innerHTML = `
+            ${isEnrolled ? '<div class="badge">Enrolled</div>' : ''}
+            <h3>${course.title}</h3>
+            <p>Instructor: ${course.instructor}</p>
+            <p>Duration: ${course.duration}</p>
+            <p>${course.description.slice(0,80)}...</p>
+            <button class="btn-details" onclick="viewDetails('${course.id}')">View Details</button>
+            <button class="btn-add-wishlist" onclick="toggleWishlist('${course.id}')" ${isInWishlist ? 'disabled' : ''}>
+                ${isInWishlist ? 'Added to Wishlist' : 'Add to Wishlist'}
+            </button>
+            <button class="btn-enroll" onclick="enrollCourse('${course.id}')" ${isEnrolled ? 'disabled' : ''}>
+                ${isEnrolled ? 'Enrolled' : 'Enroll Now'}
+            </button>
+        `;
+        coursesContainer.appendChild(card);
     });
-  }
+}
 
-  // ---------------- MODAL ----------------
-  const modal = document.createElement("div");
-  modal.className = "course-modal hidden";
-  document.body.appendChild(modal);
+// ---------------- Wishlist ----------------
+window.toggleWishlist = function(courseId){
+    if(wishlist.includes(courseId)) {
+        wishlist = wishlist.filter(id => id !== courseId);
+    } else {
+        wishlist.push(courseId);
+    }
+    localStorage.setItem('wishlist_' + currentUser.id, JSON.stringify(wishlist));
+    renderCourses();
+}
 
-  function openModal(course, enrolled) {
-    modal.innerHTML = `
-      <div class="modal-content">
-        <button class="close-btn">&times;</button>
+// ---------------- Enroll ----------------
+window.enrollCourse = function(courseId){
+    if(!enrolled.includes(courseId)){
+        enrolled.push(courseId);
+        localStorage.setItem('enrollments_' + currentUser.id, JSON.stringify(enrolled));
+        alert('Successfully enrolled!');
+    }
+    renderCourses();
+}
+
+// ---------------- View Details (Modal) ----------------
+window.viewDetails = function(courseId){
+    const courses = DB.getCourses();
+    const course = courses.find(c => c.id === courseId);
+    if(!course) return;
+
+    modalCard.innerHTML = `
         <h2>${course.title}</h2>
         <p><strong>Instructor:</strong> ${course.instructor}</p>
         <p><strong>Category:</strong> ${course.category}</p>
         <p><strong>Duration:</strong> ${course.duration}</p>
-        <p><strong>Price:</strong> ${course.price > 0 ? "$" + course.price : "Free"}</p>
+        <p><strong>Price:</strong> ${course.price > 0 ? '$'+course.price : 'Free'}</p>
         <p><strong>Description:</strong> ${course.description}</p>
         <p><strong>Content:</strong> <a href="${course.content}" target="_blank">View Content</a></p>
-
-        <div class="modal-actions">
-          <button class="${enrolled ? "enrolled-btn" : "enroll-btn"}">
-            ${enrolled ? "Enrolled" : "Enroll Now"}
-          </button>
-          <button class="cancel-btn">Cancel</button>
-        </div>
-      </div>
     `;
+    courseModal.classList.remove("hidden");
+}
 
-    modal.classList.remove("hidden");
-
-    modal.querySelector(".close-btn").addEventListener("click", () => modal.classList.add("hidden"));
-    modal.querySelector(".cancel-btn").addEventListener("click", () => modal.classList.add("hidden"));
-
-    const enrollBtn = modal.querySelector(".enroll-btn");
-    if (enrollBtn) {
-      enrollBtn.addEventListener("click", () => {
-        if(!currentUser) return alert("Please login first");
-
-        const alreadyEnrolled = DB.getEnrollments().some(e => e.courseId === course.id && e.userId === currentUser.id);
-        if (alreadyEnrolled) return;
-
-        const newEnroll = {
-          id: "enr" + Date.now(),
-          userId: currentUser.id,
-          courseId: course.id,
-          date: new Date().toISOString()
-        };
-
-        const allEnrollments = DB.getEnrollments();
-        allEnrollments.push(newEnroll);
-        DB.saveEnrollments(allEnrollments);
-
-        enrollBtn.textContent = "Enrolled";
-        enrollBtn.classList.remove("enroll-btn");
-        enrollBtn.classList.add("enrolled-btn");
-        enrollBtn.disabled = true;
-
-        const card = [...coursesContainer.children].find(c => c.querySelector("h3").textContent === course.title);
-        if (card && !card.querySelector(".badge")) {
-          const b = document.createElement("div");
-          b.className = "badge";
-          b.textContent = "Enrolled";
-          card.appendChild(b);
-        }
-      });
-    }
-  }
-
-  renderCourses();
+closeModalBtn.addEventListener("click", () => {
+    courseModal.classList.add("hidden");
 });
+
+// ---------------- Initial Render ----------------
+renderCourses();
+
+// ---------------- Event Listeners ----------------
+searchInput.addEventListener('input', renderCourses);
+filterCategory.addEventListener('change', renderCourses);

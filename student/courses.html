@@ -1,22 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Available Courses</title>
-  <link rel="stylesheet" href="../css/student.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Available Courses | EduPlatform</title>
+<link rel="stylesheet" href="../css/student.css">
 </head>
 <body>
-
+<header class="student-header">
+  <h1>EduPlatform</h1>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="wishlist.html">wishlist</a>
+    <a href="my_courses.html">My Courses</a>
+    <a href="student_dashboard.html">Dashboard</a>
+    <button id="logoutBtn">Logout</button>
+  </nav>
+</header>
 <header class="page-header">
   <h1>Available Courses</h1>
   <p>Choose your next skill</p>
+  <div class="search-filter">
+    <input type="text" id="searchInput" placeholder="Search courses...">
+    <select id="filterCategory">
+      <option value="">All Categories</option>
+      <!-- Categories populated by JS -->
+    </select>
+  </div>
 </header>
 
 <div class="container">
-  <div class="courses-grid" id="coursesContainer">
-    <!-- Cards injected by JS -->
+  <div id="coursesContainer" class="courses-grid">
+    <!-- Courses injected by JS -->
   </div>
 </div>
+
+<!-- Modal for course details -->
+<div id="courseModal" class="course-modal hidden">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <div id="modalCard"></div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p>© 2026 EduPlatform. All rights reserved.</p>
+</footer>
 
 <script type="module" src="../js/courses.js"></script>
 </body>
