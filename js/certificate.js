@@ -8,7 +8,7 @@ export class Certificate {
     this.issueDate = issueDate;
   }
 
-  // توليد شهادة HTML جاهزة للعرض
+  // make a certificate
   generateCertificate(studentName, courseTitle) {
     return `
       <div style="width: 800px; padding: 40px; text-align: center; border: 10px solid #3f37c9; border-radius: 20px; font-family: 'Segoe UI', sans-serif;">
@@ -22,22 +22,22 @@ export class Certificate {
     `;
   }
 
-  // تحميل الشهادة كـ HTML
+  // download the certificate
   downloadCertificate(studentName, courseTitle) {
     const certHTML = this.generateCertificate(studentName, courseTitle);
     const newWindow = window.open("", "_blank");
     newWindow.document.write(certHTML);
     newWindow.document.close();
-    newWindow.print(); // يفتح نافذة الطباعة
+    newWindow.print(); // open the print window
   }
 
-  // إضافة شهادة للـ DB بعد اكتمال الكورس
+  // add certificate to DB
   static checkAndGenerate(student, course) {
     const progressKey = `progress_${student.id}_${course.id}`;
     const progressData = JSON.parse(localStorage.getItem(progressKey)) || { completed: [] };
 
     if (progressData.completed.length === course.content.length) {
-      // اتأكد إنه ماعملش شهادة قبل كده
+      //check the certificate is not exist
       const existingCertificates = DB.getCertificates();
       const alreadyIssued = existingCertificates.find(c => c.studentId === student.id && c.courseId === course.id);
       if (!alreadyIssued) {
@@ -48,10 +48,8 @@ export class Certificate {
           new Date().toLocaleDateString()
         );
 
-        // خزّنها
         DB.saveCertificates([...existingCertificates, newCert]);
 
-        // افتح الشهادة للتحميل
         newCert.downloadCertificate(student.name, course.title);
       }
     }
