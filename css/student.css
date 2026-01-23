@@ -303,3 +303,113 @@ body {
     color: #777;
     font-size: 0.9rem;
 }
+/* Video Box */
+.video-box {
+  width: 100%;
+  max-width: 900px;
+  margin: 20px auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.video-box iframe {
+  width: 100%;
+  height: 500px; /* أعلى شويه عشان يكون واضح */
+  border: none;
+  display: block;
+}
+
+/* Progress */
+.progress-wrapper {
+  max-width: 900px;
+  margin: 20px auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 12px;
+  background: #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+#progressFill {
+  height: 100%;
+  width: 0%;
+  background: #3f37c9;
+  transition: width 0.3s ease;
+}
+
+#progressText {
+  min-width: 40px;
+  text-align: right;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Video Controls */
+.video-controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.video-controls button {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  background: #3f37c9;
+  color: white;
+  transition: 0.3s;
+}
+
+.video-controls button:hover {
+  background: #2e2bb5;
+}
+
+/* Back to Courses */
+#backCoursesBtn {
+  display: block;
+  margin: 25px auto 0 auto;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  background: #f72585;
+  color: white;
+  transition: 0.3s;
+}
+
+#backCoursesBtn:hover {
+  background: #d21866;
+}
+
+/* Responsive */
+@media screen and (max-width: 600px) {
+  .video-box iframe {
+    height: 300px;
+  }
+
+  .video-controls {
+    flex-direction: column;
+  }
+
+  .progress-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  #progressText {
+    text-align: left;
+  }
+}

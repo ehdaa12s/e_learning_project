@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Course Content</title>
+  <link rel="stylesheet" href="../css/student.css">
+</head>
+<body>
+
+<header class="student-header">
+  <div class="logo">EduPlatform</div>
+  <nav>
+    <span id="studentName"></span>
+    <button id="logoutBtn">Logout</button>
+  </nav>
+</header>
+
+<div class="container">
+
+  <h2 id="courseTitle"></h2>
+
+  <!-- Progress -->
+  <div class="progress-wrapper">
+    <div class="progress-bar">
+      <div id="progressFill"></div>
+    </div>
+    <span id="progressText">0%</span>
+  </div>
+
+  <!-- Video -->
+  <div class="video-box">
+    <iframe id="videoFrame" allowfullscreen></iframe>
+  </div>
+
+  <!-- Controls -->
+  <div class="video-controls">
+    <button id="prevBtn">Previous</button>
+    <button id="completeBtn">Mark as Completed</button>
+    <button id="nextBtn">Next</button>
+  </div>
+
+  <!-- Back to Courses -->
+  <div style="margin-top: 20px;">
+    <button id="backCoursesBtn">Back to Courses</button>
+  </div>
+
+</div>
+
+<script type="module" src="../js/course_content.js"></script>
+<script>
+  document.getElementById("backCoursesBtn").addEventListener("click", () => {
+    window.location.href = "./my_courses.html";
+  });
+</script>
+
+</body>
+</html>

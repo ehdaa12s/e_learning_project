@@ -3,7 +3,7 @@ import { DB } from "./db.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // Add Form 
+  // ---------------- Add Form ----------------
   const titleInput = document.getElementById("courseTitle");
   const instructorInput = document.getElementById("courseInstructor");
   const categorySelect = document.getElementById("courseCategory");
@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const errorMsg = document.getElementById("courseError");
   const successMsg = document.getElementById("courseSuccess");
 
-  // Edit Modal 
+  // ---------------- Edit Modal ----------------
   const editModal = document.getElementById("editModal");
   const editTitle = document.getElementById("editTitle");
   const editInstructor = document.getElementById("editInstructor");
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let editingCourseId = null;
 
-  // Categories 
+  // ---------------- Categories ----------------
   const categories = DB.getCategories();
 
   function fillCategories(select, selectedValue = "") {
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   fillCategories(categorySelect);
 
-  // Render Courses
+  // ---------------- Render Courses ----------------
   function renderCourses() {
     const courses = Course.getAll();
     tableBody.innerHTML = "";
@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>${course.price}</td>
         <td>${course.duration}</td>
         <td>${course.description}</td>
-        <td>${course.content}</td>
+        <td>${course.content.length} videos</td>
         <td>
           <button class="editBtn" data-id="${course.id}">Edit</button>
           <button class="deleteBtn" data-id="${course.id}">Delete</button>
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
       tableBody.appendChild(tr);
     });
 
-    // Edit  
+    // -------- Edit --------
     document.querySelectorAll(".editBtn").forEach(btn => {
       btn.addEventListener("click", () => {
         const course = Course.findById(btn.dataset.id);
@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
         editPrice.value = course.price;
         editDuration.value = course.duration;
         editDescription.value = course.description;
-        editContent.value = course.content;
+        editContent.value = course.content.join(", ");
 
         fillCategories(editCategory, course.category);
 
@@ -93,9 +93,17 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    // Delete 
+    // -------- Delete (Confirm) --------
     document.querySelectorAll(".deleteBtn").forEach(btn => {
       btn.addEventListener("click", () => {
+        const course = Course.findById(btn.dataset.id);
+
+        const confirmDelete = confirm(
+          `Are you sure you want to delete "${course.title}" ?`
+        );
+
+        if (!confirmDelete) return;
+
         Course.delete(btn.dataset.id);
         successMsg.textContent = "Course deleted successfully!";
         errorMsg.textContent = "";
@@ -104,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Add Course 
+  // ---------------- Add Course ----------------
   addBtn.addEventListener("click", () => {
     const title = titleInput.value.trim();
 
@@ -118,6 +126,11 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    const contentArray = contentInput.value
+      .split(",")
+      .map(link => link.trim())
+      .filter(link => link !== "");
+
     try {
       Course.create({
         title,
@@ -126,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
         price: Number(priceInput.value),
         duration: durationInput.value.trim(),
         description: descriptionInput.value.trim(),
-        content: contentInput.value.trim()
+        content: contentArray
       });
 
       titleInput.value = "";
@@ -147,7 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  //save Edit
+  // ---------------- Save Edit ----------------
   saveEditBtn.addEventListener("click", () => {
     const newTitle = editTitle.value.trim();
 
@@ -168,7 +181,10 @@ document.addEventListener("DOMContentLoaded", () => {
       price: Number(editPrice.value),
       duration: editDuration.value.trim(),
       description: editDescription.value.trim(),
-      content: editContent.value.trim()
+      content: editContent.value
+        .split(",")
+        .map(link => link.trim())
+        .filter(link => link !== "")
     });
 
     editModal.classList.add("hidden");
@@ -182,19 +198,16 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCourses();
 });
 
+// ---------------- Auth ----------------
 const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 if (!currentUser) {
   window.location.href = "../login.html";
 }
 
-// show user name
-const adminNameEl = document.getElementById("adminName");
-adminNameEl.textContent = currentUser.name;
+document.getElementById("adminName").textContent = currentUser.name;
+document.querySelector(".admin-avatar").textContent =
+  currentUser.name.charAt(0).toUpperCase();
 
-const avatarEl = document.querySelector(".admin-avatar");
-avatarEl.textContent = currentUser.name.charAt(0).toUpperCase();
-
-// Logout
 document.getElementById("logoutBtn").addEventListener("click", () => {
   localStorage.removeItem("currentUser");
   window.location.href = "../index.html";

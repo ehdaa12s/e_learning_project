@@ -53,6 +53,7 @@
     <tbody></tbody>
   </table>
 </div>
+<button id="backDashboardBtn" class="logoutBtn" style="margin-left: 3%;">Back to Dashboard</button>
 
 <!-- Edit Modal -->
 <div id="editModal" class="modal hidden">
@@ -76,6 +77,12 @@
   </div>
 </div>
 
+
 <script type="module" src="../js/courses_admin.js"></script>
+<script>
+  document.getElementById('backDashboardBtn').addEventListener('click', () => {
+  window.location.href = 'dashboard.html';
+});
+</script>
 </body>
 </html>
