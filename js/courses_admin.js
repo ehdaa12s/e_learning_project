@@ -1,5 +1,7 @@
 import { Course } from "./course.js";
 import { Category } from "./category.js";
+import { db } from "./firebase.js";
+import { collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -31,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const editError = document.getElementById("editError");
 
   let editingCourseId = null;
+  let playlistCourseId = null;
 
   /* ===== Categories ===== */
   async function fillCategories(select, selectedValue = "") {
@@ -65,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>${course.content}</td>
         <td>
           <button class="editBtn" data-id="${course.id}">Edit</button>
+          <button class="playlistBtn" data-id="${course.id}" data-title="${course.title}">Playlist</button>
           <button class="deleteBtn" data-id="${course.id}">Delete</button>
         </td>
       `;
@@ -104,6 +108,17 @@ document.addEventListener("DOMContentLoaded", () => {
           errorMsg.textContent = err;
           successMsg.textContent = "";
         }
+      });
+    });
+
+    /* ===== Playlist ===== */
+    document.querySelectorAll(".playlistBtn").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        playlistCourseId = btn.dataset.id;
+        const courseTitle = btn.dataset.title || "Course";
+        document.getElementById("playlistCourseTitle").textContent = `Manage Playlist: ${courseTitle}`;
+        await renderModules();
+        document.getElementById("playlistModal").classList.remove("hidden");
       });
     });
   }
@@ -190,4 +205,100 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   renderCourses();
+
+  /* ===== Playlist Modal Logic ===== */
+  const playlistModal = document.getElementById("playlistModal");
+  const modulesList = document.getElementById("modulesList");
+  const addModuleBtn = document.getElementById("addModuleBtn");
+  const closePlaylistBtn = document.getElementById("closePlaylistBtn");
+  const playlistError = document.getElementById("playlistError");
+  const playlistSuccess = document.getElementById("playlistSuccess");
+  const moduleTitle = document.getElementById("moduleTitle");
+  const moduleVideoUrl = document.getElementById("moduleVideoUrl");
+  const moduleDuration = document.getElementById("moduleDuration");
+  const moduleOrder = document.getElementById("moduleOrder");
+
+  async function renderModules() {
+    modulesList.innerHTML = "";
+    if (!playlistCourseId) return;
+    const snap = await getDocs(collection(db, `courses/${playlistCourseId}/modules`));
+    const modules = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (Number(a.order || 0) - Number(b.order || 0)));
+
+    if (modules.length === 0) {
+      modulesList.innerHTML = '<li>No modules yet</li>';
+      return;
+    }
+
+    modules.forEach(m => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <div class="module-info">
+          <strong>${m.order ?? 0}. ${m.title}</strong>
+          <div>${m.duration ? `Duration: ${m.duration}` : ""}</div>
+          <a href="${m.videoUrl}" target="_blank">Open Video</a>
+        </div>
+        <div>
+          <button class="deleteModuleBtn" data-id="${m.id}">Delete</button>
+        </div>
+      `;
+      modulesList.appendChild(li);
+    });
+
+    document.querySelectorAll(".deleteModuleBtn").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        try {
+          await deleteDoc(doc(db, `courses/${playlistCourseId}/modules`, btn.dataset.id));
+          playlistSuccess.textContent = "Module deleted";
+          playlistError.textContent = "";
+          await renderModules();
+        } catch (err) {
+          playlistError.textContent = err?.message || String(err);
+          playlistSuccess.textContent = "";
+        }
+      });
+    });
+  }
+
+  addModuleBtn?.addEventListener("click", async () => {
+    playlistError.textContent = "";
+    playlistSuccess.textContent = "";
+    const title = moduleTitle.value.trim();
+    const url = moduleVideoUrl.value.trim();
+    const dur = moduleDuration.value.trim();
+    const ord = Number(moduleOrder.value || 0);
+    if (!playlistCourseId) {
+      playlistError.textContent = "No course selected";
+      return;
+    }
+    if (!title || !url) {
+      playlistError.textContent = "Title and Video URL are required";
+      return;
+    }
+    try {
+      await addDoc(collection(db, `courses/${playlistCourseId}/modules`), {
+        title,
+        videoUrl: url,
+        duration: dur,
+        order: ord,
+        createdAt: Date.now()
+      });
+      playlistSuccess.textContent = "Module added";
+      moduleTitle.value = "";
+      moduleVideoUrl.value = "";
+      moduleDuration.value = "";
+      moduleOrder.value = "";
+      await renderModules();
+    } catch (err) {
+      playlistError.textContent = err?.message || String(err);
+    }
+  });
+
+  closePlaylistBtn?.addEventListener("click", () => {
+    playlistModal.classList.add("hidden");
+    playlistCourseId = null;
+    modulesList.innerHTML = "";
+    playlistError.textContent = "";
+    playlistSuccess.textContent = "";
+  });
 });

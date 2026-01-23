@@ -11,13 +11,13 @@
   <h1>Manage Courses</h1>
 
   <div class="form-group">
-    <input type="text" id="courseTitle" placeholder="Course Title">
-    <input type="text" id="courseInstructor" placeholder="Instructor">
-    <select id="courseCategory"></select>
-    <input type="number" id="coursePrice" placeholder="Price">
-    <input type="text" id="courseDuration" placeholder="Duration">
-    <textarea id="courseDescription" placeholder="Description"></textarea>
-    <input type="text" id="courseContent" placeholder="Content URL">
+    <input type="text" id="courseTitle" placeholder="Course Title" aria-label="Course Title">
+    <input type="text" id="courseInstructor" placeholder="Instructor" aria-label="Instructor">
+    <select id="courseCategory" aria-label="Course Category"></select>
+    <input type="number" id="coursePrice" placeholder="Price" aria-label="Price">
+    <input type="text" id="courseDuration" placeholder="Duration" aria-label="Duration">
+    <textarea id="courseDescription" placeholder="Description" aria-label="Description"></textarea>
+    <input type="text" id="courseContent" placeholder="Content URL" aria-label="Content URL">
     <button id="addCourseBtn">Add Course</button>
   </div>
 
@@ -47,13 +47,13 @@
   <div class="modal-card">
     <h2>Edit Course</h2>
 
-    <input type="text" id="editTitle">
-    <input type="text" id="editInstructor">
-    <select id="editCategory"></select>
-    <input type="number" id="editPrice">
-    <input type="text" id="editDuration">
-    <textarea id="editDescription"></textarea>
-    <input type="text" id="editContent">
+    <input type="text" id="editTitle" aria-label="Course Title">
+    <input type="text" id="editInstructor" aria-label="Instructor">
+    <select id="editCategory" aria-label="Course Category"></select>
+    <input type="number" id="editPrice" aria-label="Price">
+    <input type="text" id="editDuration" aria-label="Duration">
+    <textarea id="editDescription" aria-label="Description"></textarea>
+    <input type="text" id="editContent" aria-label="Content URL">
 
     <div class="modal-actions">
       <button id="saveEditBtn">Save</button>
@@ -65,5 +65,35 @@
 </div>
 
 <script type="module" src="../js/courses_admin.js"></script>
+
+
+<div id="playlistModal" class="modal hidden">
+  <div class="modal-card">
+    <h2 id="playlistCourseTitle">Manage Playlist</h2>
+
+    <div class="form-group">
+      <input type="text" id="moduleTitle" placeholder="Module Title" aria-label="Module Title">
+      <input type="text" id="moduleVideoUrl" placeholder="Video URL (YouTube or MP4)" aria-label="Video URL">
+      <input type="text" id="moduleDuration" placeholder="Duration (e.g., 10m)" aria-label="Duration">
+      <input type="number" id="moduleOrder" placeholder="Order" aria-label="Module Order">
+      <button id="addModuleBtn">Add Module</button>
+    </div>
+
+    <div class="error" id="playlistError"></div>
+    <div class="success" id="playlistSuccess"></div>
+
+    <h3>Modules</h3>
+    <ul id="modulesList" class="modules-list"></ul>
+
+    <div class="modal-actions">
+      <button id="closePlaylistBtn">Close</button>
+    </div>
+  </div>
+  <style>
+    .modules-list { list-style: none; padding: 0; }
+    .modules-list li { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #eee; }
+    .modules-list .module-info { flex: 1; }
+  </style>
+</div>
 </body>
 </html>

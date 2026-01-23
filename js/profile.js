@@ -13,7 +13,7 @@ window.updateProfile = function () {
     user.updateProfile({ name, email });
 
     document.getElementById("message").innerText =
-        "✅ Profile Updated Successfully";
+        " Profile Updated Successfully";
 };
 
 window.changePassword = function () {

@@ -1,46 +1,49 @@
-import { DB } from "./db.js";
+import { db } from "./firebase.js";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const tableBody = document.querySelector("#enrollmentsTable tbody");
 
-  function renderEnrollments() {
-    const enrollments = DB.getEnrollments();
-    const users = DB.getUsers();
-    const courses = DB.getCourses();
-
+  async function renderEnrollments() {
     tableBody.innerHTML = "";
 
-    if(enrollments.length === 0){
+    const snap = await getDocs(collection(db, "enrollments"));
+    const enrollments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    if (enrollments.length === 0) {
       const tr = document.createElement("tr");
       tr.innerHTML = `<td colspan="5" style="text-align:center">No enrollments found</td>`;
       tableBody.appendChild(tr);
       return;
     }
 
-    enrollments.forEach(enroll => {
-      const student = users.find(u => u.id === enroll.userId);
-      const course = courses.find(c => c.id === enroll.courseId);
-
+    // Render rows (lazy-load user/course names client-side if available)
+    for (const enroll of enrollments) {
       const tr = document.createElement("tr");
+      const created = enroll.createdAt ? new Date(enroll.createdAt).toLocaleString() : "-";
       tr.innerHTML = `
         <td>${enroll.id}</td>
-        <td>${student ? student.name : "Deleted User"}</td>
-        <td>${course ? course.title : "Deleted Course"}</td>
-        <td>${new Date(enroll.date).toLocaleString()}</td>
+        <td>${enroll.userName || enroll.userId || "Unknown User"}</td>
+        <td>${enroll.courseTitle || enroll.courseId || "Unknown Course"}</td>
+        <td>${created}</td>
         <td>
           <button class="deleteBtn" data-id="${enroll.id}">Delete</button>
         </td>
       `;
       tableBody.appendChild(tr);
-    });
+    }
 
     // Handle delete buttons
     document.querySelectorAll(".deleteBtn").forEach(btn => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", async () => {
         const enrollId = btn.dataset.id;
-        const updatedEnrollments = DB.getEnrollments().filter(e => e.id != enrollId);
-        DB.saveEnrollments(updatedEnrollments);
-        renderEnrollments();
+        await deleteDoc(doc(db, "enrollments", enrollId));
+        await renderEnrollments();
       });
     });
   }
