@@ -1,0 +1,152 @@
+:root {
+    --primary: #4e54c8;  
+    --secondary: #8f94fb;     
+    --text: #333;
+    --background: #f4f6f8;
+    --error: #d32f2f;
+    --footer-bg: #4e54c8;
+}
+/* GENERAL */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--background);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+}
+
+/* HEADER */
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1em 3em;
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
+
+.site-header .logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.site-header nav a {
+    color: white;
+    margin-left: 20px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+
+
+.site-header .btn-signup:hover {
+    opacity: 0.85;
+}
+
+/* AUTH CONTAINER */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 20px;
+  flex-wrap: wrap;
+}
+
+/* CARD */
+.auth-card {
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.auth-card h2 {
+  margin-bottom: 20px;
+  font-size: 26px;
+  color: var(--primary);
+}
+
+/* FORM ELEMENTS */
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+  width: 90%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+/* BUTTON */
+button.btn-primary {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  background: var(--secondary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button.btn-primary:hover {
+  opacity: 0.9;
+}
+
+/* ERROR & SUCCESS */
+.error {
+  color: var(--error);
+  font-size: 13px;
+}
+
+.success {
+  color: green;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* FOOTER */
+.form-footer {
+  margin-top: 15px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.form-footer a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.form-footer a:hover {
+  text-decoration: underline;
+}
+
+footer, .LoginFooter {
+  background: var(--footer-bg);
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+}
+
+.LoginFooter {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}

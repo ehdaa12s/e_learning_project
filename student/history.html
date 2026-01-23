@@ -3,64 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My History - E-Learning</title>
-<link rel="stylesheet" href="../css/style.css">
+<title>Learning History | EduPlatform</title>
 <link rel="stylesheet" href="../css/student.css">
-<style>
-    body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
-    h1 { text-align: center; margin-bottom: 30px; color: #333; }
-    .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 20px; }
-    .course-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-    .course-card h3 { margin-bottom: 10px; color: #4361ee; }
-    .course-status { margin-top: 10px; font-size: 0.95rem; }
-    .certificate { margin-top: 10px; display: inline-block; padding: 5px 10px; background: #3f37c9; color: white; border-radius: 5px; text-decoration: none; }
-    .no-data { text-align: center; color: #888; font-size: 1.1rem; margin-top: 30px; }
-</style>
 </head>
 <body>
 
-<h1>My Learning History</h1>
-<div id="historyContainer" class="courses-grid">
-    <!-- Completed courses will be populated here -->
-</div>
+<header class="student-header">
+  <div class="logo">EduPlatform</div>
+  <nav>
+    <a href="student-courses.html">Courses</a>
+    <a href="wishlist.html">Wishlist</a>
+    <a href="my-courses.html">My Courses</a>
+    <span class="student-name" id="studentName">Student</span>
+    <button id="logoutBtn">Logout</button>
+  </nav>
+</header>
 
-<script type="module">
-import { DB } from "../js/db.js";
 
-const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-if(!currentUser.email || currentUser.type !== 'student') {
+<main>
+    <h1>My Learning History</h1>
+    <div class="courses-grid" id="historyContainer">
+        <!-- History cards injected by JS -->
+    </div>
+</main>
+
+<footer class="site-footer">
+    <p>© 2026 EduPlatform. All rights reserved.</p>
+</footer>
+
+<script type="module" src="../js/student_history.js"></script>
+<script>
+const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+document.getElementById('studentName').textContent = currentUser ? currentUser.name : '';
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('currentUser');
     window.location.href = '../login.html';
-}
-
-const historyContainer = document.getElementById('historyContainer');
-
-function loadHistory() {
-    const enrollments = DB.getEnrollments();
-    const courses = DB.getCourses();
-    const certificates = DB.getCertificates();
-
-    const completedEnrollments = enrollments.filter(e => e.studentId === currentUser.id && e.progress === 100);
-    if(completedEnrollments.length === 0){
-        historyContainer.innerHTML = '<p class="no-data">You have not completed any courses yet.</p>';
-        return;
-    }
-
-    historyContainer.innerHTML = completedEnrollments.map(enrollment => {
-        const course = courses.find(c => c.id === enrollment.courseId);
-        if(!course) return '';
-        const cert = certificates.find(c => c.studentId === currentUser.id && c.courseId === course.id);
-        return `
-            <div class="course-card">
-                <h3>${course.title}</h3>
-                <p>Instructor: ${course.instructor || 'Unknown'}</p>
-                <div class="course-status">Status: Completed ✅</div>
-                ${cert ? `<a href="${cert.file || '#'}" class="certificate" target="_blank">View Certificate</a>` : ''}
-            </div>
-        `;
-    }).join('');
-}
-
-loadHistory();
+});
 </script>
+
 </body>
 </html>

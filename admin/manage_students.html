@@ -7,10 +7,21 @@
   <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>
+<header class="admin-header">
+  <div class="admin-header-left">
+    <h2>Admin Panel</h2>
+  </div>
 
+  <div class="admin-header-right">
+    <div class="admin-profile">
+      <span id="adminName">Admin</span>
+      <div class="admin-avatar">A</div>
+    </div>
+    <button id="logoutBtn">Logout</button>
+  </div>
+</header>
 <div class="container">
   <h1>Manage Students</h1>
-  <!-- هنا هنعرض عدد الطلاب -->
   <p id="studentsCount" style="font-weight: bold; margin-bottom: 10px;"></p>
 
   <table id="studentsTable">
@@ -23,11 +34,24 @@
     </thead>
     <tbody></tbody>
   </table>
-
+  <br>
   <button id="backDashboardBtn" class="logoutBtn">Back to Dashboard</button>
 </div>
 
 <!-- scripts -->
 <script type="module" src="../js/students.js"></script>
+<script>
+  const admin = JSON.parse(localStorage.getItem("currentUser"));
+
+if (admin) {
+  document.getElementById("adminName").textContent = admin.name;
+  document.querySelector(".admin-avatar").textContent =
+    admin.name.charAt(0).toUpperCase();
+}
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  localStorage.removeItem("currentUser");
+  window.location.href = "../index.html";
+});
+</script>
 </body>
 </html>

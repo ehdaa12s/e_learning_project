@@ -3,3 +3,4 @@ package-lock.json
 firebase.js
 .DS_Store
 .vscode
+.env

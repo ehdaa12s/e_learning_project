@@ -1,10 +1,4 @@
-import { db } from "./firebase.js";
-import {
-  collection,
-  getDocs,
-  deleteDoc,
-  doc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { Enrollment } from "./enrollement.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const tableBody = document.querySelector("#enrollmentsTable tbody");
@@ -12,8 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function renderEnrollments() {
     tableBody.innerHTML = "";
 
-    const snap = await getDocs(collection(db, "enrollments"));
-    const enrollments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const enrollments = await Enrollment.listAll?.();
 
     if (enrollments.length === 0) {
       const tr = document.createElement("tr");
@@ -42,7 +35,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".deleteBtn").forEach(btn => {
       btn.addEventListener("click", async () => {
         const enrollId = btn.dataset.id;
-        await deleteDoc(doc(db, "enrollments", enrollId));
+        if (Enrollment.delete) {
+          await Enrollment.delete(enrollId);
+        }
         await renderEnrollments();
       });
     });

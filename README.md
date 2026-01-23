@@ -65,3 +65,34 @@ Student Management (Admin): View student progress and approve/reject enrollments
 Course Access (Student): Browse, search, filter, enroll, view course content, track progress, wishlist, and history. 
 Optional Features: Payment integration, feedback/rating system, certificates. 
  
+## Firebase Integration & Clean Architecture
+
+This project uses Firebase Authentication and Firestore for data. We are standardizing access through feature-focused modules and services for maintainability.
+
+### Structure
+- `js/auth.js`: Login/logout and session helpers
+- `js/enrollement.js`: Enrollment service (check/enroll)
+- `js/payment.js`: Payment UI and orchestration (uses PayPal SDK and services)
+- `js/services/paymentService.js`: Records payments in Firestore
+- `js/courses_admin.js`: Admin course management, playlist CRUD
+- `lib/paypal.js`: Loads PayPal SDK and renders Buttons
+
+### Data Model
+- `users`: auth-managed users with profile documents (optional)
+- `courses`: course documents
+- `courses/{courseId}/modules`: playlist modules per course
+- `enrollments`: `{ userId, courseId, status, createdAt }`
+- `payments`: `{ userId, courseId, amount, provider, providerOrderId, status, createdAt }`
+
+### Environment
+- Place a JSON `.env` at project root. Include `client_id` for PayPal:
+```
+{ "client_id": "<YOUR_PAYPAL_CLIENT_ID>" }
+```
+`js/payment.js` reads `/.env` to retrieve `client_id` if not provided elsewhere.
+
+### Notes
+- Avoid direct Firestore writes in UI components; prefer shared services.
+- Use `Enrollment.enroll()` everywhere for consistent enrollment handling.
+- For backend-driven PayPal flows, add a server and move capture logic to server endpoints.
+ 

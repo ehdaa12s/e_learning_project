@@ -1,7 +1,6 @@
-import { Course } from "./course.js";
-import { Category } from "./category.js";
-import { db } from "./firebase.js";
-import { collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { CourseService } from "./services/courseService.js";
+import { CategoryService } from "./services/categoryService.js";
+import { PlaylistService } from "./services/playlistService.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -38,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ===== Categories ===== */
   async function fillCategories(select, selectedValue = "") {
     select.innerHTML = '<option value="">-- Select Category --</option>';
-    const categories = await Category.getAll();
+    const categories = await CategoryService.getAll();
     categories.forEach(cat => {
       const option = document.createElement("option");
       option.value = cat.name || "";
@@ -52,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===== Render Courses ===== */
   async function renderCourses() {
-    const courses = await Course.getAll();
+    const courses = await CourseService.getAll();
     tableBody.innerHTML = "";
 
     courses.forEach(course => {
@@ -78,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ===== Edit ===== */
     document.querySelectorAll(".editBtn").forEach(btn => {
       btn.addEventListener("click", async () => {
-        const course = await Course.findById(btn.dataset.id);
+        const course = await CourseService.findById(btn.dataset.id);
 
         editingCourseId = course.id;
 
@@ -100,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".deleteBtn").forEach(btn => {
       btn.addEventListener("click", async () => {
         try {
-          await Course.delete(btn.dataset.id);
+          await CourseService.delete(btn.dataset.id);
           successMsg.textContent = "Course deleted successfully!";
           errorMsg.textContent = "";
           await renderCourses();
@@ -127,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
   addBtn.addEventListener("click", async () => {
     const title = titleInput.value.trim();
 
-    const all = await Course.getAll();
+    const all = await CourseService.getAll();
     const duplicate = all.find(
       c => (c.title || "").toLowerCase() === title.toLowerCase()
     );
@@ -139,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      await Course.create({
+      await CourseService.create({
         title,
         instructor: instructorInput.value.trim(),
         category: categorySelect.value,
@@ -171,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
   saveEditBtn.addEventListener("click", async () => {
     const newTitle = editTitle.value.trim();
 
-    const all = await Course.getAll();
+    const all = await CourseService.getAll();
     const duplicate = all.find(
       c => (c.title || "").toLowerCase() === newTitle.toLowerCase()
         && c.id !== editingCourseId
@@ -183,7 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      await Course.update(editingCourseId, {
+      await CourseService.update(editingCourseId, {
         title: newTitle,
         instructor: editInstructor.value.trim(),
         category: editCategory.value,
@@ -221,9 +220,8 @@ document.addEventListener("DOMContentLoaded", () => {
   async function renderModules() {
     modulesList.innerHTML = "";
     if (!playlistCourseId) return;
-    const snap = await getDocs(collection(db, `courses/${playlistCourseId}/modules`));
-    const modules = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-      .sort((a, b) => (Number(a.order || 0) - Number(b.order || 0)));
+    const modules = await PlaylistService.listModules(playlistCourseId);
+    modules.sort((a, b) => (Number(a.order || 0) - Number(b.order || 0)));
 
     if (modules.length === 0) {
       modulesList.innerHTML = '<li>No modules yet</li>';
@@ -248,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".deleteModuleBtn").forEach(btn => {
       btn.addEventListener("click", async () => {
         try {
-          await deleteDoc(doc(db, `courses/${playlistCourseId}/modules`, btn.dataset.id));
+          await PlaylistService.deleteModule(playlistCourseId, btn.dataset.id);
           playlistSuccess.textContent = "Module deleted";
           playlistError.textContent = "";
           await renderModules();
@@ -276,7 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     try {
-      await addDoc(collection(db, `courses/${playlistCourseId}/modules`), {
+      await PlaylistService.addModule(playlistCourseId, {
         title,
         videoUrl: url,
         duration: dur,

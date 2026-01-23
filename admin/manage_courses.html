@@ -6,7 +6,19 @@
   <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>
+<header class="admin-header">
+  <div class="admin-header-left">
+    <h2>Admin Panel</h2>
+  </div>
 
+  <div class="admin-header-right">
+    <div class="admin-profile">
+      <span id="adminName">Admin</span>
+      <div class="admin-avatar">A</div>
+    </div>
+    <button id="logoutBtn">Logout</button>
+  </div>
+</header>
 <div class="container">
   <h1>Manage Courses</h1>
 
@@ -41,19 +53,20 @@
     <tbody></tbody>
   </table>
 </div>
+<button id="backDashboardBtn" class="logoutBtn" style="margin-left: 3%;">Back to Dashboard</button>
 
 <!-- Edit Modal -->
 <div id="editModal" class="modal hidden">
   <div class="modal-card">
     <h2>Edit Course</h2>
 
-    <input type="text" id="editTitle" aria-label="Course Title">
-    <input type="text" id="editInstructor" aria-label="Instructor">
-    <select id="editCategory" aria-label="Course Category"></select>
-    <input type="number" id="editPrice" aria-label="Price">
-    <input type="text" id="editDuration" aria-label="Duration">
-    <textarea id="editDescription" aria-label="Description"></textarea>
-    <input type="text" id="editContent" aria-label="Content URL">
+    <input type="text" id="editTitle" aria-label="Edit Title">
+    <input type="text" id="editInstructor" aria-label="Edit Instructor">
+    <select id="editCategory" aria-label="Edit Category"></select>
+    <input type="number" id="editPrice" aria-label="Edit Price">
+    <input type="text" id="editDuration" aria-label="Edit Duration">
+    <textarea id="editDescription" aria-label="Edit Description"></textarea>
+    <input type="text" id="editContent" aria-label="Edit Content URL">
 
     <div class="modal-actions">
       <button id="saveEditBtn">Save</button>
@@ -64,36 +77,12 @@
   </div>
 </div>
 
+
 <script type="module" src="../js/courses_admin.js"></script>
-
-
-<div id="playlistModal" class="modal hidden">
-  <div class="modal-card">
-    <h2 id="playlistCourseTitle">Manage Playlist</h2>
-
-    <div class="form-group">
-      <input type="text" id="moduleTitle" placeholder="Module Title" aria-label="Module Title">
-      <input type="text" id="moduleVideoUrl" placeholder="Video URL (YouTube or MP4)" aria-label="Video URL">
-      <input type="text" id="moduleDuration" placeholder="Duration (e.g., 10m)" aria-label="Duration">
-      <input type="number" id="moduleOrder" placeholder="Order" aria-label="Module Order">
-      <button id="addModuleBtn">Add Module</button>
-    </div>
-
-    <div class="error" id="playlistError"></div>
-    <div class="success" id="playlistSuccess"></div>
-
-    <h3>Modules</h3>
-    <ul id="modulesList" class="modules-list"></ul>
-
-    <div class="modal-actions">
-      <button id="closePlaylistBtn">Close</button>
-    </div>
-  </div>
-  <style>
-    .modules-list { list-style: none; padding: 0; }
-    .modules-list li { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #eee; }
-    .modules-list .module-info { flex: 1; }
-  </style>
-</div>
+<script>
+  document.getElementById('backDashboardBtn').addEventListener('click', () => {
+  window.location.href = 'dashboard.html';
+});
+</script>
 </body>
 </html>

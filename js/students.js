@@ -1,14 +1,11 @@
-import { db } from "./firebase.js";
-import { getDocs, collection, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { UserService } from "./services/userService.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
   const studentsTableBody = document.querySelector('#studentsTable tbody');
   const studentsCountEl = document.getElementById('studentsCount');
   const backBtn = document.getElementById('backDashboardBtn');
 
-  const q = query(collection(db, 'users'), where('role', '==', 'student'));
-  const snap = await getDocs(q);
-  const students = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const students = await UserService.listStudents();
 
   
   studentsCountEl.textContent = `Total Students: ${students.length}`;

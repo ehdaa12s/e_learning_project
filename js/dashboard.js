@@ -1,5 +1,4 @@
-import { db } from "./firebase.js";
-import { getDocs, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { StatsService } from "./services/statsService.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const totalCategories = document.getElementById("totalCategories");
@@ -8,17 +7,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const totalEnrollments = document.getElementById("totalEnrollments");
 
   async function loadCounts() {
-    const [catSnap, courseSnap, userSnap, enrSnap] = await Promise.all([
-      getDocs(collection(db, "categories")),
-      getDocs(collection(db, "courses")),
-      getDocs(collection(db, "users")),
-      getDocs(collection(db, "enrollments"))
-    ]);
-
-    totalCategories.textContent = catSnap.size;
-    totalCourses.textContent = courseSnap.size;
-    totalUsers.textContent = userSnap.size;
-    totalEnrollments.textContent = enrSnap.size;
+    const counts = await StatsService.counts();
+    totalCategories.textContent = counts.categories;
+    totalCourses.textContent = counts.courses;
+    totalUsers.textContent = counts.users;
+    totalEnrollments.textContent = counts.enrollments;
   }
 
   loadCounts();
