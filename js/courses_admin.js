@@ -76,7 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".editBtn").forEach(btn => {
       btn.addEventListener("click", () => {
         const course = Course.findById(btn.dataset.id);
-
         editingCourseId = course.id;
 
         editTitle.value = course.title;
@@ -97,11 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".deleteBtn").forEach(btn => {
       btn.addEventListener("click", () => {
         const course = Course.findById(btn.dataset.id);
-
-        const confirmDelete = confirm(
-          `Are you sure you want to delete "${course.title}" ?`
-        );
-
+        const confirmDelete = confirm(`Are you sure you want to delete "${course.title}" ?`);
         if (!confirmDelete) return;
 
         Course.delete(btn.dataset.id);
@@ -112,35 +107,42 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ---------------- Add Course ----------------
+  // Validation Functions
+  const titleRegex = /^[^\d][\w\s\-_]{2,}$/; 
+  const instructorRegex = /^[A-Za-z\s]{3,}$/;
+  const urlRegex = /^(https?:\/\/[^\s]+)$/;
+
+  function validateCourseData({ title, instructor, category, price, duration, description, contentArray }) {
+    if (!titleRegex.test(title)) throw "Title must be at least 3 characters and not start with a number!";
+    if (!instructorRegex.test(instructor)) throw "Instructor name must be at least 3 letters and only letters/spaces!";
+    if (!category) throw "Please select a category!";
+    if (isNaN(price) || price < 0) throw "Price must be a positive number!";
+    if (!duration) throw "Duration is required!";
+    if (description.length < 10) throw "Description must be at least 10 characters!";
+    for (let link of contentArray) {
+      if (!urlRegex.test(link)) throw "Content links must be valid URLs!";
+    }
+  }
+
+  // Add Course
   addBtn.addEventListener("click", () => {
     const title = titleInput.value.trim();
-
-    const duplicate = Course.getAll().find(
-      c => c.title.toLowerCase() === title.toLowerCase()
-    );
-
-    if (duplicate) {
-      errorMsg.textContent = "Course title already exists!";
-      successMsg.textContent = "";
-      return;
-    }
-
-    const contentArray = contentInput.value
-      .split(",")
-      .map(link => link.trim())
-      .filter(link => link !== "");
+    const instructor = instructorInput.value.trim();
+    const category = categorySelect.value;
+    const price = Number(priceInput.value);
+    const duration = durationInput.value.trim();
+    const description = descriptionInput.value.trim();
+    const contentArray = contentInput.value.split(",").map(l => l.trim()).filter(l => l !== "");
 
     try {
-      Course.create({
-        title,
-        instructor: instructorInput.value.trim(),
-        category: categorySelect.value,
-        price: Number(priceInput.value),
-        duration: durationInput.value.trim(),
-        description: descriptionInput.value.trim(),
-        content: contentArray
-      });
+      validateCourseData({ title, instructor, category, price, duration, description, contentArray });
+
+      // Duplicate check
+      if (Course.getAll().some(c => c.title.toLowerCase() === title.toLowerCase())) {
+        throw "Course title already exists!";
+      }
+
+      Course.create({ title, instructor, category, price, duration, description, content: contentArray });
 
       titleInput.value = "";
       instructorInput.value = "";
@@ -163,32 +165,38 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---------------- Save Edit ----------------
   saveEditBtn.addEventListener("click", () => {
     const newTitle = editTitle.value.trim();
+    const newInstructor = editInstructor.value.trim();
+    const newCategory = editCategory.value;
+    const newPrice = Number(editPrice.value);
+    const newDuration = editDuration.value.trim();
+    const newDescription = editDescription.value.trim();
+    const newContentArray = editContent.value.split(",").map(l => l.trim()).filter(l => l !== "");
 
-    const duplicate = Course.getAll().find(
-      c => c.title.toLowerCase() === newTitle.toLowerCase()
-        && c.id !== editingCourseId
-    );
+    try {
+      validateCourseData({ title: newTitle, instructor: newInstructor, category: newCategory, price: newPrice, duration: newDuration, description: newDescription, contentArray: newContentArray });
 
-    if (duplicate) {
-      editError.textContent = "Course title already exists!";
-      return;
+      // Duplicate check excluding current editing course
+      if (Course.getAll().some(c => c.title.toLowerCase() === newTitle.toLowerCase() && c.id !== editingCourseId)) {
+        throw "Course title already exists!";
+      }
+
+      Course.update(editingCourseId, {
+        title: newTitle,
+        instructor: newInstructor,
+        category: newCategory,
+        price: newPrice,
+        duration: newDuration,
+        description: newDescription,
+        content: newContentArray
+      });
+
+      editModal.classList.add("hidden");
+      renderCourses();
+      editError.textContent = "";
+
+    } catch (err) {
+      editError.textContent = err;
     }
-
-    Course.update(editingCourseId, {
-      title: newTitle,
-      instructor: editInstructor.value.trim(),
-      category: editCategory.value,
-      price: Number(editPrice.value),
-      duration: editDuration.value.trim(),
-      description: editDescription.value.trim(),
-      content: editContent.value
-        .split(",")
-        .map(link => link.trim())
-        .filter(link => link !== "")
-    });
-
-    editModal.classList.add("hidden");
-    renderCourses();
   });
 
   cancelEditBtn.addEventListener("click", () => {
@@ -200,13 +208,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ---------------- Auth ----------------
 const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-if (!currentUser) {
-  window.location.href = "../login.html";
-}
+if (!currentUser) window.location.href = "../login.html";
 
 document.getElementById("adminName").textContent = currentUser.name;
-document.querySelector(".admin-avatar").textContent =
-  currentUser.name.charAt(0).toUpperCase();
+document.querySelector(".admin-avatar").textContent = currentUser.name.charAt(0).toUpperCase();
 
 document.getElementById("logoutBtn").addEventListener("click", () => {
   localStorage.removeItem("currentUser");

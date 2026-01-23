@@ -25,8 +25,7 @@ export class Course {
     }
 
     // Price check
-    if (data.price < 0) throw "Price cannot be negative!";
-    if (data.duration < 0) throw "duration cannot be negative!";
+    if (data.price < 0 || isNaN(data.price)) throw "Price must be a positive number!";
 
     // Duplicate check
     if (courses.some(c => c.title.toLowerCase() === data.title.toLowerCase())) {
@@ -48,7 +47,9 @@ export class Course {
     if (!newData.title || !newData.instructor || !newData.category || !newData.duration || !newData.description || !newData.content) {
       throw "All course fields must be filled!";
     }
-    if (newData.price < 0) throw "Price cannot be negative!";
+
+    if (newData.price < 0 || isNaN(newData.price)) throw "Price must be a positive number!";
+    
     if (courses.some(c => c.title.toLowerCase() === newData.title.toLowerCase() && c.id !== id)) {
       throw "Course title already exists!";
     }
@@ -68,5 +69,3 @@ export class Course {
     return courses.find(c => c.id === id);
   }
 }
-
-

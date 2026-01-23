@@ -7,6 +7,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const categoryError = document.getElementById("categoryError");
   const categorySuccess = document.getElementById("categorySuccess");
 
+
+  function showMessage({ success = "", error = "" }) {
+    categorySuccess.textContent = success;
+    categoryError.textContent = error;
+  }
+
   function renderCategories() {
     const categories = Category.getAll();
     categoriesTableBody.innerHTML = "";
@@ -23,69 +29,62 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
       categoriesTableBody.appendChild(tr);
     });
-
-    // Edit
-    document.querySelectorAll(".editBtn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const catId = btn.dataset.id;
-        const cat = Category.findById(catId);
-        const newName = prompt("Edit Category Name", cat.name);
-        if (!newName || newName.trim() === "") return;
-
-        try {
-          Category.update(catId, { name: newName.trim() });
-          categorySuccess.textContent = "Category updated successfully!";
-          categoryError.textContent = "";
-          renderCategories();
-        } catch (err) {
-          categoryError.textContent = err;
-          categorySuccess.textContent = "";
-        }
-      });
-    });
-
-    // Delete
-    document.querySelectorAll(".deleteBtn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const catId = btn.dataset.id;
-        Category.delete(catId);
-        categorySuccess.textContent = "Category deleted successfully!";
-        categoryError.textContent = "";
-        renderCategories();
-      });
-    });
   }
+
+  // Event Delegation: Edit & Delete
+  categoriesTableBody.addEventListener("click", (e) => {
+    const btn = e.target;
+
+    if (btn.classList.contains("editBtn")) {
+      const catId = btn.dataset.id;
+      const cat = Category.findById(catId);
+      const newName = prompt("Edit Category Name", cat.name);
+      if (!newName) return;
+
+      try {
+        Category.update(catId, { name: newName });
+        showMessage({ success: "Category updated successfully!" });
+        renderCategories();
+      } catch (err) {
+        showMessage({ error: err });
+      }
+    }
+
+    if (btn.classList.contains("deleteBtn")) {
+      const catId = btn.dataset.id;
+      const cat = Category.findById(catId);
+
+      // Confirm befor delete
+      const confirmDelete = window.confirm(`Are you sure you want to delete category "${cat.name}"?`);
+      if (!confirmDelete) return;
+
+      Category.delete(catId);
+      showMessage({ success: "Category deleted successfully!" });
+      renderCategories();
+    }
+  });
 
   // Add Category
   addCategoryBtn.addEventListener("click", () => {
-    const name = categoryNameInput.value.trim();
-    if (!name) {
-      categoryError.textContent = "Category name cannot be empty!";
-      categorySuccess.textContent = "";
-      return;
-    }
-
+    const name = categoryNameInput.value;
     try {
       Category.create(name);
       categoryNameInput.value = "";
-      categorySuccess.textContent = "Category added successfully!";
-      categoryError.textContent = "";
+      showMessage({ success: "Category added successfully!" });
       renderCategories();
     } catch (err) {
-      categoryError.textContent = err;
-      categorySuccess.textContent = "";
+      showMessage({ error: err });
     }
   });
 
   renderCategories();
 });
 
+// Login check
 const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-if (!currentUser) {
-  window.location.href = "../login.html";
-}
+if (!currentUser) window.location.href = "../login.html";
 
-// show user name
+// Show user info
 const adminNameEl = document.getElementById("adminName");
 adminNameEl.textContent = currentUser.name;
 
