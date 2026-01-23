@@ -1,6 +1,7 @@
-import { auth, db } from "./firebase.js";
-import { getDocs, collection, query, where, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { auth } from "./firebase.js";
 import { setupPaymentUI } from "./payment.js";
+import { Enrollment } from "./enrollement.js";
+import { CourseService } from "./services/courseService.js";
 
 const currentUser = null;
 
@@ -11,13 +12,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const enrollmentsByCourse = new Set();
 
   async function fetchData() {
-    const snap = await getDocs(collection(db, 'courses'));
-    courses = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    courses = await CourseService.getAll();
     const user = auth.currentUser;
     if (user) {
-      const qEnr = query(collection(db, 'enrollments'), where('userId', '==', user.uid));
-      const enrSnap = await getDocs(qEnr);
-      enrSnap.forEach(doc => enrollmentsByCourse.add(doc.data().courseId));
+      const enrolledIds = await Enrollment.getCoursesByUser(user.uid);
+      enrolledIds.forEach(id => enrollmentsByCourse.add(id));
     }
   }
 
@@ -59,12 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
         enrollBtn.addEventListener('click', async () => {
           const user = auth.currentUser;
           if (!user) return alert('Please login first');
-          await addDoc(collection(db, 'enrollments'), {
-            userId: user.uid,
-            courseId: course.id,
-            status: 'approved',
-            createdAt: Date.now()
-          });
+          await Enrollment.enroll(user.uid, course.id);
           enrollBtn.textContent = 'Enrolled';
           enrollBtn.disabled = true;
           enrollBtn.classList.remove('enroll-btn');
@@ -108,12 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
       enrollBtn.addEventListener('click', async () => {
         const user = auth.currentUser;
         if (!user) return alert('Please login first');
-        await addDoc(collection(db, 'enrollments'), {
-          userId: user.uid,
-          courseId: course.id,
-          status: 'approved',
-          createdAt: Date.now()
-        });
+        await Enrollment.enroll(user.uid, course.id);
         enrollBtn.textContent = 'Enrolled';
         enrollBtn.classList.remove('enroll-btn');
         enrollBtn.classList.add('enrolled-btn');

@@ -1,225 +1,406 @@
+/* ======================= General ======================= */
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f0f2f5;
-  margin: 0;
-  color: #333;
-}
-
-header {
-  text-align: center;
-  padding: 30px 20px;
-  background: linear-gradient(to right, #4e54c8, #8f94fb);
-  color: white;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-header h1 {
-  margin-bottom: 5px;
-}
-
-header p {
-  font-size: 16px;
-  opacity: 0.9;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f5f6fa;
+    margin: 0;
+    padding: 0;
+    color: #333;
 }
 
 .container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 20px;
+    width: 95%;
+    max-width: 1200px;
+    margin: 20px auto;
 }
 
-.courses-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
+/* ======================= Header ======================= */
+/* ======================= Header ======================= */
+.student-header {
+    background: #3f37c9;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 25px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
-/* Course Card */
-.course-card {
-  background: #fff;
-  padding: 25px 20px;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-  position: relative;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.student-header .logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    flex-shrink: 0;
 }
 
-.course-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+.student-header nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    flex: 1;
+    justify-content: flex-end;
 }
 
-.course-card h3 {
-  margin: 0 0 12px;
-  font-size: 20px;
-  color: #222;
+.student-header nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: 0.3s;
 }
 
-.duration {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 10px;
+.student-header nav a:hover {
+    background: rgba(255,255,255,0.15);
 }
 
-.short-desc {
-  font-size: 14px;
-  color: #555;
-  line-height: 1.5;
-  margin-bottom: 15px;
+.student-header nav .student-name {
+    background: rgba(255,255,255,0.2);
+    padding: 6px 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    transition: 0.3s;
+    flex-shrink: 0;
 }
 
-/* Buttons */
-.details-btn {
-  display: block;
-  width: 100%;
-  padding: 12px 0;
-  border: none;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #4e54c8, #8f94fb);
-  color: white;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+.student-header nav .student-name:hover {
+    background: rgba(255,255,255,0.35);
 }
 
-.details-btn:hover {
-  background: linear-gradient(90deg, #3b3fbf, #7a7ff2);
+
+
+.student-header nav button {
+    background: #f72585;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+    flex-shrink: 0;
 }
 
-/* Badge */
-.badge {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: #28a745;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+.student-header nav button:hover {
+    background: #d21866;
 }
 
-/* MODAL */
+/* Responsive Header */
+@media screen and (max-width: 800px) {
+    .student-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .student-header nav {
+        justify-content: flex-start;
+        gap: 10px;
+        width: 100%;
+    }
+}
+
+
+/* ======================= Search Filter ======================= */
+.search-filter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.search-filter input {
+    flex: 1;
+    max-width: 400px;
+    padding: 10px 15px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+.search-filter input:focus {
+    border-color: #3f37c9;
+    box-shadow: 0 0 8px rgba(63,55,201,0.3);
+}
+
+.search-filter select {
+    padding: 10px 15px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+.search-filter select:focus {
+    border-color: #3f37c9;
+    box-shadow: 0 0 8px rgba(63,55,201,0.3);
+}
+
+/* ======================= Courses & Certificates Grid ======================= */
+.courses-grid,
+.certificates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+/* ======================= Cards ======================= */
+.course-card,
+.certificate-card {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+}
+
+.course-card:hover,
+.certificate-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+}
+
+.course-card h3,
+.certificate-card h3 {
+    color: #3f37c9;
+    font-size: 1.4rem;
+    margin: 0 0 12px 0;
+}
+
+.course-card p,
+.certificate-card p {
+    margin: 5px 0;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+/* ======================= Buttons ======================= */
+.course-card button,
+.certificate-card button,
+.video-controls button,
+.btn-primary {
+    margin-top: 12px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    background: #3f37c9;
+    color: white;
+    transition: 0.3s;
+    text-align: center;
+}
+
+.course-card button:hover,
+.certificate-card button:hover,
+.video-controls button:hover,
+.btn-primary:hover {
+    background: #2e2bb5;
+}
+
+/* Special Buttons */
+#backCoursesBtn {
+    display: block;
+    margin: 25px auto 0 auto;
+    padding: 12px 25px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    background: #f72585;
+    color: white;
+    transition: 0.3s;
+}
+
+#backCoursesBtn:hover {
+    background: #d21866;
+}
+
+/* ======================= Video Box ======================= */
+.video-box {
+    width: 100%;
+    max-width: 900px;
+    margin: 25px auto;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.video-box iframe {
+    width: 100%;
+    height: 500px;
+    border: none;
+    display: block;
+}
+
+/* ======================= Progress ======================= */
+.progress-wrapper {
+    max-width: 900px;
+    margin: 20px auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 14px;
+    background: #ddd;
+    border-radius: 7px;
+    overflow: hidden;
+}
+
+#progressFill {
+    height: 100%;
+    width: 0%;
+    background: #3f37c9;
+    transition: width 0.4s ease;
+}
+
+#progressText {
+    min-width: 45px;
+    text-align: right;
+    font-weight: 600;
+    color: #333;
+}
+
+/* ======================= Video Controls ======================= */
+.video-controls {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+.video-controls button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* ======================= Modal ======================= */
 .course-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
+    position: fixed;
+    top: 0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.65);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    padding: 20px;
 }
 
-.course-modal:not(.hidden) {
-  opacity: 1;
-  pointer-events: all;
+.course-modal.hidden {
+    display: none;
 }
 
-.modal-content {
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(10px);
-  padding: 35px 30px;
-  width: 90%;            
-  max-width: 800px;      
-  max-height: 80vh;      
-  overflow-y: auto;     
-  border-radius: 20px;
-  position: relative;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-  transform: translateY(-20px);
-  transition: transform 0.3s ease;
+.course-modal .modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 80vh; /* ما ياخدش طول الصفحة كله */
+    overflow-y: auto; /* لو المحتوى طويل يعمل scroll */
+    box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.course-modal:not(.hidden) .modal-content {
-  transform: translateY(0);
+/* زرار الغلق */
+.course-modal .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 18px;
+    font-size: 1.7rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #333;
 }
 
-.modal-content h2 {
-  margin-top: 0;
-  font-size: 24px;
-  margin-bottom: 15px;
-  color: #222;
-}
-
-.modal-content p {
-  margin-bottom: 10px;
-  line-height: 1.6;
-  color: #444;
-}
-
-.full-desc {
-  margin-top: 15px;
-  color: #555;
-}
-
-/* Modal Buttons */
+/* أزرار داخل الكارد */
 .modal-actions {
-  margin-top: 25px;
-  display: flex;
-  gap: 12px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
-.enroll-btn {
-  flex: 1;
-  padding: 14px;
-  background: linear-gradient(90deg, #28a745, #20c997);
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s ease;
+.modal-actions button {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
 }
 
-.enroll-btn:hover {
-  background: linear-gradient(90deg, #20c997, #1ca285);
+.btn-primary {
+    background: #3f37c9;
+    color: white;
 }
 
-.enrolled-btn {
-  flex: 1;
-  padding: 14px;
-  background: #6c757d;
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-weight: 600;
-  cursor: not-allowed;
+.btn-primary:hover {
+    background: #2e2bb5;
 }
 
-.cancel-btn {
-  flex: 1;
-  padding: 14px;
-  background: #dc3545;
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s ease;
+.btn-add-wishlist {
+    background: #eee;
+    color: #3f37c9;
+    border: 2px solid #3f37c9;
 }
 
-.cancel-btn:hover {
-  background: #c82333;
+.btn-add-wishlist:hover {
+    background: #3f37c9;
+    color: #fff;
 }
 
-/* Close Button */
-.close-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  border: none;
-  background: none;
-  font-size: 26px;
-  cursor: pointer;
-  color: #555;
-  transition: color 0.3s ease;
+.btn-cancel {
+    background: #f5f5f5;
 }
 
-.close-btn:hover {
-  color: #000;
+.btn-cancel:hover {
+    background: #ddd;
+}
+
+
+/* ======================= Responsive ======================= */
+@media screen and (max-width: 600px) {
+    .video-box iframe {
+        height: 300px;
+    }
+
+    .video-controls {
+        flex-direction: column;
+    }
+
+    .progress-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    #progressText {
+        text-align: left;
+    }
 }

@@ -3,57 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Dashboard</title>
-<link rel="stylesheet" href="../css/style.css">
+<title>Student Dashboard | EduPlatform</title>
 <link rel="stylesheet" href="../css/student.css">
 </head>
 <body>
 
-<h1>Welcome, <span id="studentName">Student</span>!</h1>
+<header class="student-header">
+  <div class="logo">EduPlatform</div>
+  <nav>
+    <a href="courses.html">Courses</a>
+    <a href="wishlist.html">Wishlist</a>
+    <a href="my_courses.html">My Courses</a>
+    <span class="student-name" id="studentName">Student</span>
+    <button id="logoutBtn">Logout</button>
+  </nav>
+</header>
 
-<h2>My Courses</h2>
-<div id="myCoursesContainer" class="courses-grid"></div>
+<div class="container">
+  <h1>Welcome, <span id="studentNameDisplay">Student</span> 👋</h1>
 
-<script type="module">
-import { auth, db } from "../js/firebase.js";
-import { getDocs, collection, query, where, getDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  <div class="dashboard-cards">
+    <div class="card">
+      <p>Enrolled Courses</p>
+      <h2 id="enrolledCourses">0</h2>
+    </div>
+    <div class="card">
+        <p>Completed</p>
+      <h2 id="completedCourses">0</h2>
+      
+    </div>
+    <div class="card">
+      <p>In Progress</p>
+      <h2 id="inProgressCourses">0</h2>
+    </div>
+  </div>
 
-async function loadMyCourses(){
-    const user = auth.currentUser;
-    if(!user){
-        window.location.href = '../login.html';
-        return;
-    }
+  <h2>My Courses</h2>
+  <div class="courses-grid" id="myCoursesContainer"></div>
+  <h2>My Certificates</h2>
+  <div class="certificates-grid" id="certificatesContainer"></div>
+</div>
 
-    document.getElementById('studentName').textContent = user.displayName || user.email || 'Student';
 
-    const q = query(collection(db, 'enrollments'), where('userId', '==', user.uid));
-    const snap = await getDocs(q);
-    const enrollments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+<!-- Modal for course details -->
+<div id="courseModal" class="course-modal hidden">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <div id="modalCard"></div>
+  </div>
+</div>
 
-    const container = document.getElementById('myCoursesContainer');
-    if(enrollments.length === 0){
-        container.innerHTML = '<p class="no-data">You have not enrolled in any courses yet.</p>';
-        return;
-    }
-
-    const entries = [];
-    for (const e of enrollments) {
-        const cs = await getDoc(doc(db, 'courses', e.courseId));
-        if (cs.exists()) entries.push({ course: { id: cs.id, ...cs.data() }, progress: e.progress || 0 });
-    }
-
-    container.innerHTML = entries.map(({ course, progress }) => `
-        <div class="course-card">
-            <h3>${course.title}</h3>
-            <p>Instructor: ${course.instructor || 'Unknown'}</p>
-            <p>Progress: ${progress}%</p>
-            <a href="course-details.html?id=${course.id}" class="btn-primary">Continue Course</a>
-        </div>
-    `).join('');
-}
-
-loadMyCourses();
-</script>
+<script type="module" src="../js/studentDashbord.js"></script>
 </body>
 </html>

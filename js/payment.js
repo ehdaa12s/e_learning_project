@@ -1,6 +1,7 @@
 import { auth, db } from './firebase.js';
 import { renderPayPalButton } from '../lib/paypal.js';
-import { addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { Enrollment } from './enrollement.js';
+import { recordPayment } from './services/paymentService.js';
 
 async function loadClientIdFromEnv() {
   try {
@@ -29,7 +30,7 @@ export async function setupPaymentUI({ containerId, course, paypalClientId }) {
   const amount = Number(course.price || 0);
 
   if (amount <= 0) {
-    await enrollUser({ userId: user.uid, courseId: course.id });
+    await Enrollment.enroll(user.uid, course.id);
     const c = document.getElementById(containerId);
     if (c) c.innerHTML = '<div class="success">Enrolled for free</div>';
     return;
@@ -59,7 +60,7 @@ export async function setupPaymentUI({ containerId, course, paypalClientId }) {
           providerOrderId: details?.id,
           status: details?.status || 'COMPLETED'
         });
-        await enrollUser({ userId: user.uid, courseId: course.id });
+        await Enrollment.enroll(user.uid, course.id);
         const c = document.getElementById(containerId);
         if (c) c.innerHTML = '<div class="success">Payment successful. Enrolled!</div>';
       },
@@ -75,24 +76,6 @@ export async function setupPaymentUI({ containerId, course, paypalClientId }) {
   }
 }
 
-async function recordPayment({ userId, courseId, amount, provider, providerOrderId, status }) {
-  await addDoc(collection(db, 'payments'), {
-    userId,
-    courseId,
-    amount,
-    provider,
-    providerOrderId,
-    status,
-    createdAt: Date.now()
-  });
-}
-
-async function enrollUser({ userId, courseId }) {
-  await addDoc(collection(db, 'enrollments'), {
-    userId,
-    courseId,
-    status: 'approved',
-    createdAt: Date.now()
-  });
-}
+// recordPayment moved to services/paymentService.js
+// enrollment handled by js/enrollement.js
 

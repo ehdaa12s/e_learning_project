@@ -3,74 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Progress - E-Learning</title>
-<link rel="stylesheet" href="../css/style.css">
+<title>My Progress | EduPlatform</title>
 <link rel="stylesheet" href="../css/student.css">
-<style>
-    body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
-    h1 { text-align: center; margin-bottom: 30px; color: #333; }
-    .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 20px; }
-    .course-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-    .course-card h3 { margin-bottom: 10px; color: #4361ee; }
-    .progress-section { margin-top: 15px; }
-    .progress-bar { background: #ddd; border-radius: 10px; height: 15px; overflow: hidden; }
-    .progress-fill { height: 100%; background: #3f37c9; width: 0%; transition: width 0.3s; }
-    .progress-text { font-size: 0.9rem; margin-top: 5px; display: block; }
-    .btn-primary { display: inline-block; margin-top: 10px; padding: 10px 15px; background: #3f37c9; color: white; border-radius: 8px; text-decoration: none; }
-    .btn-primary:hover { background: #2e2bb5; }
-    .no-data { text-align: center; color: #888; font-size: 1.1rem; margin-top: 30px; }
-</style>
 </head>
 <body>
 
-<h1>My Progress</h1>
-<div id="progressContainer" class="courses-grid">
-    <!-- Courses with progress will appear here -->
-</div>
+<header class="student-header">
+  <div class="logo">EduPlatform</div>
+  <nav>
+    <a href="student-courses.html">Courses</a>
+    <a href="wishlist.html">Wishlist</a>
+    <a href="my-courses.html">My Courses</a>
+    <span class="student-name" id="studentName">Student</span>
+    <button id="logoutBtn">Logout</button>
+  </nav>
+</header>
 
-<script type="module">
-import { auth, db } from "../js/firebase.js";
-import { getDocs, collection, query, where, getDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const progressContainer = document.getElementById('progressContainer');
+<main>
+    <h1>My Progress</h1>
+    <div class="courses-grid" id="progressContainer">
+        <!-- Progress cards injected by JS -->
+    </div>
+</main>
 
-async function loadProgress() {
-    const user = auth.currentUser;
-    if(!user){
-        window.location.href = '../login.html';
-        return;
-    }
+<footer class="site-footer">
+    <p>© 2026 EduPlatform. All rights reserved.</p>
+</footer>
 
-    const q = query(collection(db, 'enrollments'), where('userId', '==', user.uid));
-    const snap = await getDocs(q);
-    const userEnrollments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    if(userEnrollments.length === 0){
-        progressContainer.innerHTML = '<p class="no-data">You are not enrolled in any courses yet.</p>';
-        return;
-    }
+<script type="module" src="../js/student_progress.js"></script>
+<script>
+const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+document.getElementById('studentName').textContent = currentUser ? currentUser.name : '';
 
-    const entries = [];
-    for (const e of userEnrollments) {
-        const cs = await getDoc(doc(db, 'courses', e.courseId));
-        if (cs.exists()) entries.push({ course: { id: cs.id, ...cs.data() }, progress: e.progress || 0 });
-    }
-
-    progressContainer.innerHTML = entries.map(({ course, progress }) => `
-        <div class="course-card">
-            <h3>${course.title}</h3>
-            <p>Instructor: ${course.instructor || 'Unknown'}</p>
-            <div class="progress-section">
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: ${progress}%"></div>
-                </div>
-                <span class="progress-text">${progress}% Complete</span>
-            </div>
-            <a href="course-details.html?id=${course.id}" class="btn-primary">Continue Learning</a>
-        </div>
-    `).join('');
-}
-
-loadProgress();
+document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('currentUser');
+    window.location.href = '../login.html';
+});
 </script>
+
 </body>
 </html>

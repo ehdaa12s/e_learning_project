@@ -4,7 +4,9 @@ import {
   addDoc,
   getDocs,
   query,
-  where
+  where,
+  deleteDoc,
+  doc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 export const Enrollment = {
@@ -33,5 +35,21 @@ export const Enrollment = {
     );
     const snap = await getDocs(q);
     return !snap.empty;
+  },
+
+  async getCoursesByUser(userId) {
+    const q = query(
+      collection(db, 'enrollments'),
+      where('userId', '==', userId)
+    );
+    const snap = await getDocs(q);
+    return snap.docs.map(d => d.data().courseId);
+  },
+  async listAll() {
+    const snap = await getDocs(collection(db, 'enrollments'));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  },
+  async delete(id) {
+    await deleteDoc(doc(db, 'enrollments', id));
   }
 };
