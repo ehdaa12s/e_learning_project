@@ -15,7 +15,7 @@ export const Enrollment = {
       where("courseId", "==", courseId)
     );
     const snap = await getDocs(q);
-    if (!snap.empty) return; // already enrolled
+    if (!snap.empty) return; 
 
     await addDoc(collection(db, "enrollments"), {
       userId,

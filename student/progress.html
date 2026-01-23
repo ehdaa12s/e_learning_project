@@ -29,42 +29,45 @@
 </div>
 
 <script type="module">
-import { DB } from "../js/db.js";
-
-const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-if(!currentUser.email || currentUser.type !== 'student') {
-    window.location.href = '../login.html';
-}
+import { auth, db } from "../js/firebase.js";
+import { getDocs, collection, query, where, getDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const progressContainer = document.getElementById('progressContainer');
 
-function loadProgress() {
-    const enrollments = DB.getEnrollments();
-    const courses = DB.getCourses();
+async function loadProgress() {
+    const user = auth.currentUser;
+    if(!user){
+        window.location.href = '../login.html';
+        return;
+    }
 
-    const userEnrollments = enrollments.filter(e => e.studentId === currentUser.id);
+    const q = query(collection(db, 'enrollments'), where('userId', '==', user.uid));
+    const snap = await getDocs(q);
+    const userEnrollments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     if(userEnrollments.length === 0){
         progressContainer.innerHTML = '<p class="no-data">You are not enrolled in any courses yet.</p>';
         return;
     }
 
-    progressContainer.innerHTML = userEnrollments.map(enrollment => {
-        const course = courses.find(c => c.id === enrollment.courseId);
-        if(!course) return '';
-        return `
-            <div class="course-card">
-                <h3>${course.title}</h3>
-                <p>Instructor: ${course.instructor || 'Unknown'}</p>
-                <div class="progress-section">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${enrollment.progress}%"></div>
-                    </div>
-                    <span class="progress-text">${enrollment.progress}% Complete</span>
+    const entries = [];
+    for (const e of userEnrollments) {
+        const cs = await getDoc(doc(db, 'courses', e.courseId));
+        if (cs.exists()) entries.push({ course: { id: cs.id, ...cs.data() }, progress: e.progress || 0 });
+    }
+
+    progressContainer.innerHTML = entries.map(({ course, progress }) => `
+        <div class="course-card">
+            <h3>${course.title}</h3>
+            <p>Instructor: ${course.instructor || 'Unknown'}</p>
+            <div class="progress-section">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progress}%"></div>
                 </div>
-                <a href="course-details.html?id=${course.id}" class="btn-primary">Continue Learning</a>
+                <span class="progress-text">${progress}% Complete</span>
             </div>
-        `;
-    }).join('');
+            <a href="course-details.html?id=${course.id}" class="btn-primary">Continue Learning</a>
+        </div>
+    `).join('');
 }
 
 loadProgress();

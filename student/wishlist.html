@@ -24,46 +24,48 @@
 <div id="wishlistContainer" class="courses-grid"></div>
 
 <script type="module">
-import { DB } from "../js/db.js";
-
-const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-if(!currentUser.email || currentUser.type !== 'student'){
-    window.location.href = '../login.html';
-}
+import { auth, db } from "../js/firebase.js";
+import { Wishlist } from "../js/wishlist.js";
+import { getDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const wishlistContainer = document.getElementById('wishlistContainer');
 
-function loadWishlist(){
-    const wishlistData = DB.getWishlist().filter(w => w.studentId === currentUser.id);
-    const courses = DB.getCourses();
+async function loadWishlist(){
+    const user = auth.currentUser;
+    if(!user){
+        window.location.href = '../login.html';
+        return;
+    }
 
-    if(wishlistData.length === 0){
+    const wishlist = new Wishlist(user.uid);
+    const courseIds = await wishlist.getWishlist();
+
+    if(!courseIds || courseIds.length === 0){
         wishlistContainer.innerHTML = '<p class="no-data">Your wishlist is empty.</p>';
         return;
     }
 
-    wishlistContainer.innerHTML = wishlistData.map(item => {
-        const course = courses.find(c => c.id === item.courseId);
-        if(!course) return '';
-        return `
-            <div class="course-card">
-                <h3>${course.title}</h3>
-                <p>Instructor: ${course.instructor || 'Unknown'}</p>
-                <p>Code: ${course.code || ''}</p>
-                <button class="btn-remove" data-id="${course.id}">Remove from Wishlist</button>
-                <a href="course-details.html?id=${course.id}" class="btn-details">View Details</a>
-            </div>
-        `;
-    }).join('');
+    const courses = [];
+    for (const id of courseIds) {
+        const snap = await getDoc(doc(db, 'courses', id));
+        if (snap.exists()) courses.push({ id: snap.id, ...snap.data() });
+    }
 
-    // Remove buttons
+    wishlistContainer.innerHTML = courses.map(course => `
+        <div class="course-card">
+            <h3>${course.title}</h3>
+            <p>Instructor: ${course.instructor || 'Unknown'}</p>
+            <p>Code: ${course.code || ''}</p>
+            <button class="btn-remove" data-id="${course.id}">Remove from Wishlist</button>
+            <a href="course-details.html?id=${course.id}" class="btn-details">View Details</a>
+        </div>
+    `).join('');
+
     document.querySelectorAll('.btn-remove').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
             const courseId = btn.dataset.id;
-            let wishlistData = DB.getWishlist();
-            wishlistData = wishlistData.filter(w => !(w.studentId === currentUser.id && w.courseId === courseId));
-            DB.saveWishlist(wishlistData);
-            loadWishlist(); // Refresh
+            await wishlist.removeCourse(courseId);
+            await loadWishlist();
         });
     });
 }

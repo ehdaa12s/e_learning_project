@@ -17,7 +17,7 @@ export class User {
     this.name = name;
     this.email = email;
     this.password = password;
-    this.role = role; // لازم يكون role مش type
+    this.role = role;
   }
 
   static async register(name, email, password, role = 'student') {

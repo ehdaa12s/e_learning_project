@@ -18,14 +18,16 @@
     <p><strong>Description:</strong> <span id="courseDescription"></span></p>
     <p><strong>Content:</strong> <a href="#" id="courseContentLink" target="_blank">View Content</a></p>
     <div id="paymentContainer"></div>
+    <div id="playlistContainer" class="hidden">
+      <h2>Course Playlist</h2>
+      <div id="playerArea" style="margin-bottom: 12px;"></div>
+      <ul id="playlistList" class="playlist-list"></ul>
+    </div>
   </div>
 
-  <script>
-    window.__PAYPAL_CLIENT_ID = window.__PAYPAL_CLIENT_ID || 'YOUR_PAYPAL_CLIENT_ID';
-  </script>
   <script type="module">
     import { auth, db } from "../js/firebase.js";
-    import { doc, getDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { doc, getDoc, addDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { setupPaymentUI } from "../js/payment.js";
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -45,15 +47,93 @@
       document.getElementById("coursePrice").textContent = course.price > 0 ? "$" + course.price : "Free";
       document.getElementById("courseDescription").textContent = course.description;
       document.getElementById("courseContentLink").href = course.content;
+      await handleEnrollmentOrPlaylist(course);
+    }
 
-      const containerId = 'paymentContainer';
+    async function handleEnrollmentOrPlaylist(course) {
       const user = auth.currentUser;
+      const paymentContainer = document.getElementById('paymentContainer');
+      const playlistContainer = document.getElementById('playlistContainer');
       if (!user) {
-        document.getElementById(containerId).innerHTML = '<div class="error">Please login to enroll or buy</div>';
+        paymentContainer.innerHTML = '<div class="error">Please login to enroll or buy</div>';
         return;
       }
-      const clientId = window.__PAYPAL_CLIENT_ID;
-      await setupPaymentUI({ containerId, course, paypalClientId: clientId });
+      // Check enrollment
+      const q = query(collection(db, 'enrollments'), where('userId', '==', user.uid), where('courseId', '==', course.id));
+      const enrSnap = await getDocs(q);
+      const isEnrolled = !enrSnap.empty;
+      if (isEnrolled) {
+        paymentContainer.classList.add('hidden');
+        playlistContainer.classList.remove('hidden');
+        await renderPlaylist(course.id);
+      } else {
+        playlistContainer.classList.add('hidden');
+        paymentContainer.classList.remove('hidden');
+        const clientId = window.__PAYPAL_CLIENT_ID;
+        await setupPaymentUI({ containerId: 'paymentContainer', course, paypalClientId: clientId });
+      }
+    }
+
+    async function renderPlaylist(courseId) {
+      const listEl = document.getElementById('playlistList');
+      const playerArea = document.getElementById('playerArea');
+      listEl.innerHTML = '';
+      playerArea.innerHTML = '';
+      const snap = await getDocs(collection(db, `courses/${courseId}/modules`));
+      const modules = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (Number(a.order || 0) - Number(b.order || 0)));
+      if (modules.length === 0) {
+        listEl.innerHTML = '<li>No modules available yet</li>';
+        return;
+      }
+      modules.forEach((m, idx) => {
+        const li = document.createElement('li');
+        li.style.cursor = 'pointer';
+        li.textContent = `${m.order ?? idx + 1}. ${m.title}${m.duration ? ' (' + m.duration + ')' : ''}`;
+        li.addEventListener('click', () => playModule(m));
+        listEl.appendChild(li);
+        if (idx === 0) {
+          playModule(m);
+        }
+      });
+
+      function playModule(m) {
+        playerArea.innerHTML = '';
+        const url = m.videoUrl || '';
+        if (/youtu\.be|youtube\.com/.test(url)) {
+          const iframe = document.createElement('iframe');
+          iframe.width = '100%';
+          iframe.height = '400';
+          iframe.src = toYouTubeEmbed(url);
+          iframe.title = 'YouTube video player';
+          iframe.frameborder = '0';
+          iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+          iframe.allowFullscreen = true;
+          playerArea.appendChild(iframe);
+        } else {
+          const video = document.createElement('video');
+          video.controls = true;
+          video.src = url;
+          video.width = 800;
+          video.style.maxWidth = '100%';
+          playerArea.appendChild(video);
+        }
+      }
+
+      function toYouTubeEmbed(link) {
+        try {
+          const u = new URL(link);
+          if (u.hostname.includes('youtu.be')) {
+            const id = u.pathname.replace('/', '');
+            return `https://www.youtube.com/embed/${id}`;
+          }
+          if (u.hostname.includes('youtube.com')) {
+            const id = u.searchParams.get('v');
+            if (id) return `https://www.youtube.com/embed/${id}`;
+          }
+        } catch {}
+        return link;
+      }
     }
 
     loadCourse();

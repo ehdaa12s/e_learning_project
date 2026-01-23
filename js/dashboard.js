@@ -1,4 +1,5 @@
-import { DB } from "../js/db.js";
+import { db } from "./firebase.js";
+import { getDocs, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const totalCategories = document.getElementById("totalCategories");
@@ -6,13 +7,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const totalUsers = document.getElementById("totalUsers");
   const totalEnrollments = document.getElementById("totalEnrollments");
 
-  const categories = DB.getCategories();
-  const courses = DB.getCourses();
-  const users = DB.getUsers();
-  const enrollments = DB.getEnrollments();
+  async function loadCounts() {
+    const [catSnap, courseSnap, userSnap, enrSnap] = await Promise.all([
+      getDocs(collection(db, "categories")),
+      getDocs(collection(db, "courses")),
+      getDocs(collection(db, "users")),
+      getDocs(collection(db, "enrollments"))
+    ]);
 
-  totalCategories.textContent = categories.length;
-  totalCourses.textContent = courses.length;
-  totalUsers.textContent = users.length;
-  totalEnrollments.textContent = enrollments.length;
+    totalCategories.textContent = catSnap.size;
+    totalCourses.textContent = courseSnap.size;
+    totalUsers.textContent = userSnap.size;
+    totalEnrollments.textContent = enrSnap.size;
+  }
+
+  loadCounts();
 });

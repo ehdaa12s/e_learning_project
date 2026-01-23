@@ -15,37 +15,42 @@
 <div id="myCoursesContainer" class="courses-grid"></div>
 
 <script type="module">
-import { DB } from "../js/db.js";
+import { auth, db } from "../js/firebase.js";
+import { getDocs, collection, query, where, getDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-if(!currentUser.email || currentUser.type !== 'student'){
-    window.location.href = '../login.html';
-}
+async function loadMyCourses(){
+    const user = auth.currentUser;
+    if(!user){
+        window.location.href = '../login.html';
+        return;
+    }
 
-document.getElementById('studentName').textContent = currentUser.name || 'Student';
+    document.getElementById('studentName').textContent = user.displayName || user.email || 'Student';
 
-function loadMyCourses(){
-    const enrollments = DB.getEnrollments().filter(e => e.studentId === currentUser.id);
-    const courses = DB.getCourses();
+    const q = query(collection(db, 'enrollments'), where('userId', '==', user.uid));
+    const snap = await getDocs(q);
+    const enrollments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
     const container = document.getElementById('myCoursesContainer');
-
     if(enrollments.length === 0){
         container.innerHTML = '<p class="no-data">You have not enrolled in any courses yet.</p>';
         return;
     }
 
-    container.innerHTML = enrollments.map(e => {
-        const course = courses.find(c => c.id === e.courseId);
-        if(!course) return '';
-        return `
-            <div class="course-card">
-                <h3>${course.title}</h3>
-                <p>Instructor: ${course.instructor || 'Unknown'}</p>
-                <p>Progress: ${e.progress || 0}%</p>
-                <a href="course-details.html?id=${course.id}" class="btn-primary">Continue Course</a>
-            </div>
-        `;
-    }).join('');
+    const entries = [];
+    for (const e of enrollments) {
+        const cs = await getDoc(doc(db, 'courses', e.courseId));
+        if (cs.exists()) entries.push({ course: { id: cs.id, ...cs.data() }, progress: e.progress || 0 });
+    }
+
+    container.innerHTML = entries.map(({ course, progress }) => `
+        <div class="course-card">
+            <h3>${course.title}</h3>
+            <p>Instructor: ${course.instructor || 'Unknown'}</p>
+            <p>Progress: ${progress}%</p>
+            <a href="course-details.html?id=${course.id}" class="btn-primary">Continue Course</a>
+        </div>
+    `).join('');
 }
 
 loadMyCourses();
