@@ -1,7 +1,7 @@
-/*  General  */
+/* ======================= General ======================= */
 body {
     font-family: 'Segoe UI', sans-serif;
-    background: #f0f2f5;
+    background: #f5f6fa;
     margin: 0;
     padding: 0;
     color: #333;
@@ -13,193 +13,299 @@ body {
     margin: 20px auto;
 }
 
-/*  Header  */
+/* ======================= Header ======================= */
+/* ======================= Header ======================= */
 .student-header {
     background: #3f37c9;
     color: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 20px;
+    padding: 12px 25px;
     position: sticky;
     top: 0;
     z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .student-header .logo {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: bold;
+    flex-shrink: 0;
 }
 
-.student-header nav a,
-.student-header nav button,
-.student-header nav span {
-    margin-left: 15px;
+.student-header nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.student-header nav a {
     color: white;
     text-decoration: none;
     font-weight: 500;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: 0.3s;
 }
+
+.student-header nav a:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.student-header nav .student-name {
+    background: rgba(255,255,255,0.2);
+    padding: 6px 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    transition: 0.3s;
+    flex-shrink: 0;
+}
+
+.student-header nav .student-name:hover {
+    background: rgba(255,255,255,0.35);
+}
+
+
 
 .student-header nav button {
     background: #f72585;
     border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
+    padding: 8px 15px;
+    border-radius: 8px;
     cursor: pointer;
+    font-weight: 600;
     transition: 0.3s;
+    flex-shrink: 0;
 }
 
 .student-header nav button:hover {
     background: #d21866;
 }
 
-/*  Page Header  */
-.page-header {
-    text-align: center;
-    margin: 25px 0 15px 0;
+/* Responsive Header */
+@media screen and (max-width: 800px) {
+    .student-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .student-header nav {
+        justify-content: flex-start;
+        gap: 10px;
+        width: 100%;
+    }
 }
 
-.page-header h1 {
-    color: #4361ee;
-    margin-bottom: 5px;
-}
 
-.page-header p {
-    color: #555;
-    font-size: 1rem;
-    margin-top: 0;
-}
-
+/* ======================= Search Filter ======================= */
 .search-filter {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 10px;
     margin-top: 15px;
     flex-wrap: wrap;
 }
 
-.search-filter input,
-.search-filter select {
-    padding: 8px 12px;
-    border-radius: 8px;
+.search-filter input {
+    flex: 1;
+    max-width: 400px;
+    padding: 10px 15px;
+    border-radius: 12px;
     border: 1px solid #ccc;
-    font-size: 0.95rem;
     outline: none;
+    font-size: 1rem;
     transition: 0.3s;
 }
 
-.search-filter input:focus,
-.search-filter select:focus {
-    border-color: #4361ee;
+.search-filter input:focus {
+    border-color: #3f37c9;
+    box-shadow: 0 0 8px rgba(63,55,201,0.3);
 }
 
-/*  Courses Grid  */
-.courses-grid {
+.search-filter select {
+    padding: 10px 15px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+.search-filter select:focus {
+    border-color: #3f37c9;
+    box-shadow: 0 0 8px rgba(63,55,201,0.3);
+}
+
+/* ======================= Courses & Certificates Grid ======================= */
+.courses-grid,
+.certificates-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
+    gap: 25px;
     margin-top: 20px;
 }
 
-/*  Course Card  */
-.course-card {
+/* ======================= Cards ======================= */
+.course-card,
+.certificate-card {
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-    padding: 20px;
-    position: relative;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    padding: 22px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
 }
 
-.course-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+.course-card:hover,
+.certificate-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.15);
 }
 
-.course-card h3 {
-    color: #4361ee;
-    margin: 0 0 10px 0;
-    font-size: 1.2rem;
+.course-card h3,
+.certificate-card h3 {
+    color: #3f37c9;
+    font-size: 1.4rem;
+    margin: 0 0 12px 0;
 }
 
-.course-card p {
-    margin: 4px 0;
+.course-card p,
+.certificate-card p {
+    margin: 5px 0;
     font-size: 0.95rem;
     color: #555;
 }
 
-/*  Badge  */
-.badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: #3f37c9;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 8px;
-    font-size: 0.75rem;
-    font-weight: bold;
-}
-
-/*  Buttons  */
+/* ======================= Buttons ======================= */
 .course-card button,
-.course-card a.btn-details {
-    margin-top: 10px;
-    padding: 8px 12px;
+.certificate-card button,
+.video-controls button,
+.btn-primary {
+    margin-top: 12px;
+    padding: 10px 18px;
     border-radius: 8px;
     border: none;
     cursor: pointer;
     font-weight: 500;
-    transition: 0.3s;
-    text-align: center;
-    text-decoration: none;
-}
-
-.btn-details {
-    background: #4361ee;
-    color: white;
-    display: inline-block;
-}
-
-.btn-details:hover {
-    background: #3a50c6;
-}
-
-.btn-add-wishlist {
-    background: #f72585;
-    color: white;
-}
-
-.btn-add-wishlist:hover {
-    background: #d21866;
-}
-
-.btn-enroll {
     background: #3f37c9;
     color: white;
+    transition: 0.3s;
+    text-align: center;
 }
 
-.btn-enroll:hover {
+.course-card button:hover,
+.certificate-card button:hover,
+.video-controls button:hover,
+.btn-primary:hover {
     background: #2e2bb5;
 }
 
-/*  Modal  */
+/* Special Buttons */
+#backCoursesBtn {
+    display: block;
+    margin: 25px auto 0 auto;
+    padding: 12px 25px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    background: #f72585;
+    color: white;
+    transition: 0.3s;
+}
+
+#backCoursesBtn:hover {
+    background: #d21866;
+}
+
+/* ======================= Video Box ======================= */
+.video-box {
+    width: 100%;
+    max-width: 900px;
+    margin: 25px auto;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.video-box iframe {
+    width: 100%;
+    height: 500px;
+    border: none;
+    display: block;
+}
+
+/* ======================= Progress ======================= */
+.progress-wrapper {
+    max-width: 900px;
+    margin: 20px auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 14px;
+    background: #ddd;
+    border-radius: 7px;
+    overflow: hidden;
+}
+
+#progressFill {
+    height: 100%;
+    width: 0%;
+    background: #3f37c9;
+    transition: width 0.4s ease;
+}
+
+#progressText {
+    min-width: 45px;
+    text-align: right;
+    font-weight: 600;
+    color: #333;
+}
+
+/* ======================= Video Controls ======================= */
+.video-controls {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+.video-controls button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* ======================= Modal ======================= */
 .course-modal {
     position: fixed;
     top: 0;
     left:0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.65);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 2000;
-    overflow-y: auto;
     padding: 20px;
 }
 
@@ -209,207 +315,92 @@ body {
 
 .course-modal .modal-content {
     background: white;
-    padding: 30px;
-    border-radius: 12px;
+    padding: 25px;
+    border-radius: 14px;
     width: 100%;
     max-width: 600px;
+    max-height: 80vh; /* ما ياخدش طول الصفحة كله */
+    overflow-y: auto; /* لو المحتوى طويل يعمل scroll */
+    box-shadow: 0 12px 25px rgba(0,0,0,0.25);
     position: relative;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    animation: fadeIn 0.3s ease;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 15px;
 }
 
-.course-modal .modal-content h2 {
-    color: #4361ee;
-    margin-bottom: 10px;
-}
-
-.course-modal .modal-content p {
-    font-size: 0.95rem;
-    margin: 4px 0;
-    color: #555;
-}
-
-.course-modal .modal-content a {
-    color: #3f37c9;
-    text-decoration: underline;
-    font-weight: 500;
-}
-
+/* زرار الغلق */
 .course-modal .close-btn {
     position: absolute;
-    top: 12px;
-    right: 15px;
-    font-size: 1.5rem;
+    top: 15px;
+    right: 18px;
+    font-size: 1.7rem;
     cursor: pointer;
     background: none;
     border: none;
     color: #333;
 }
 
-/*  Modal Actions  */
-.course-modal .modal-actions {
+/* أزرار داخل الكارد */
+.modal-actions {
     display: flex;
-    justify-content: flex-end;
     gap: 10px;
-    margin-top: 15px;
+    flex-wrap: wrap;
 }
 
-.course-modal .modal-actions button {
-    padding: 8px 15px;
+.modal-actions button {
+    flex: 1;
+    padding: 10px 12px;
     border-radius: 8px;
     border: none;
     cursor: pointer;
-    font-weight: 500;
-    transition: 0.3s;
 }
 
-.course-modal .enroll-btn {
+.btn-primary {
     background: #3f37c9;
     color: white;
 }
 
-.course-modal .enroll-btn:hover {
+.btn-primary:hover {
     background: #2e2bb5;
 }
 
-.course-modal .enrolled-btn {
-    background: #888;
-    color: white;
-    cursor: not-allowed;
+.btn-add-wishlist {
+    background: #eee;
+    color: #3f37c9;
+    border: 2px solid #3f37c9;
 }
 
-.course-modal .cancel-btn {
-    background: #f72585;
-    color: white;
+.btn-add-wishlist:hover {
+    background: #3f37c9;
+    color: #fff;
 }
 
-.course-modal .cancel-btn:hover {
-    background: #d21866;
+.btn-cancel {
+    background: #f5f5f5;
 }
 
-/*  Animations  */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px);}
-    to { opacity: 1; transform: translateY(0);}
+.btn-cancel:hover {
+    background: #ddd;
 }
 
-/*  Footer  */
-.site-footer {
-    text-align: center;
-    padding: 20px 0;
-    color: #777;
-    font-size: 0.9rem;
-}
-/* Video Box */
-.video-box {
-  width: 100%;
-  max-width: 900px;
-  margin: 20px auto;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
 
-.video-box iframe {
-  width: 100%;
-  height: 500px; /* أعلى شويه عشان يكون واضح */
-  border: none;
-  display: block;
-}
-
-/* Progress */
-.progress-wrapper {
-  max-width: 900px;
-  margin: 20px auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.progress-bar {
-  flex: 1;
-  height: 12px;
-  background: #ddd;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-#progressFill {
-  height: 100%;
-  width: 0%;
-  background: #3f37c9;
-  transition: width 0.3s ease;
-}
-
-#progressText {
-  min-width: 40px;
-  text-align: right;
-  font-weight: 500;
-  color: #333;
-}
-
-/* Video Controls */
-.video-controls {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-top: 15px;
-  flex-wrap: wrap;
-}
-
-.video-controls button {
-  padding: 10px 18px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  background: #3f37c9;
-  color: white;
-  transition: 0.3s;
-}
-
-.video-controls button:hover {
-  background: #2e2bb5;
-}
-
-/* Back to Courses */
-#backCoursesBtn {
-  display: block;
-  margin: 25px auto 0 auto;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  background: #f72585;
-  color: white;
-  transition: 0.3s;
-}
-
-#backCoursesBtn:hover {
-  background: #d21866;
-}
-
-/* Responsive */
+/* ======================= Responsive ======================= */
 @media screen and (max-width: 600px) {
-  .video-box iframe {
-    height: 300px;
-  }
+    .video-box iframe {
+        height: 300px;
+    }
 
-  .video-controls {
-    flex-direction: column;
-  }
+    .video-controls {
+        flex-direction: column;
+    }
 
-  .progress-wrapper {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
+    .progress-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
 
-  #progressText {
-    text-align: left;
-  }
+    #progressText {
+        text-align: left;
+    }
 }
