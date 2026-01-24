@@ -9,7 +9,8 @@ async function loadClientIdFromEnv() {
     if (!res.ok) return null;
     const text = await res.text();
     const data = JSON.parse(text);
-    const cid = data.client_id || null;
+    const raw = data.client_id || null;
+    const cid = typeof raw === 'string' ? raw.trim() : raw;
     if (cid) {
       window.__PAYPAL_CLIENT_ID = cid;
     }
@@ -37,11 +38,12 @@ export async function setupPaymentUI({ containerId, course, paypalClientId }) {
   }
 
   let clientId = paypalClientId || window.__PAYPAL_CLIENT_ID;
-  if (!clientId || clientId === 'app_id') {
+  clientId = typeof clientId === 'string' ? clientId.trim() : clientId;
+  if (!clientId) {
     // Try loading from .env
     clientId = await loadClientIdFromEnv();
   }
-  if (!clientId || clientId === 'app_id') {
+  if (!clientId) {
     if (container) container.innerHTML = '<div class="error">PayPal not configured. Please set your PayPal Client ID.</div>';
     return;
   }

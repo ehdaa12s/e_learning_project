@@ -25,6 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>${enroll.courseTitle || enroll.courseId || "Unknown Course"}</td>
         <td>${created}</td>
         <td>
+          <span class="status">${enroll.status || 'approved'}</span>
+          <button class="approveBtn" data-id="${enroll.id}">Approve</button>
+          <button class="rejectBtn" data-id="${enroll.id}">Reject</button>
           <button class="deleteBtn" data-id="${enroll.id}">Delete</button>
         </td>
       `;
@@ -45,3 +48,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   renderEnrollments();
 });
+    // Handle approve/reject
+    document.querySelectorAll('.approveBtn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.id;
+        await Enrollment.updateStatus(id, 'approved');
+        await renderEnrollments();
+      });
+    });
+    document.querySelectorAll('.rejectBtn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.id;
+        await Enrollment.updateStatus(id, 'rejected');
+        await renderEnrollments();
+      });
+    });
