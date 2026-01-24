@@ -17,20 +17,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     courses.forEach(course => {
-      // كل الطلبة المسجلين في الكورس ده
+      // get all student enrolment in the course
       const enrolledKey = `enrollments_${course.id}`;
       const enrolledStudents = users.filter(user => {
         const enrollments = JSON.parse(localStorage.getItem(`enrollments_${user.id}`)) || [];
         return enrollments.includes(course.id);
       });
 
-      // عدد الطلبة اللي خلصوا الكورس
+      // number of student finish the course
       const completedStudents = enrolledStudents.filter(user => {
         const progress = JSON.parse(localStorage.getItem(`progress_${user.id}_${course.id}`)) || { currentIndex: 0, completed: [] };
         return progress.completed.length === (DB.getCourses().find(c => c.id === course.id).content.length);
       });
 
-      // عدد الطلبة اللي لسه ما خلصوش
+      // number of student in progress
       const inProgressStudents = enrolledStudents.length - completedStudents.length;
 
       const tr = document.createElement("tr");

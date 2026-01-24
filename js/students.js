@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Event Delegation
+  // Event Delegation in all table
   studentsTableBody.addEventListener("click", (e) => {
     const btn = e.target;
     const users = DB.getUsers();
