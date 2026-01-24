@@ -2,10 +2,36 @@ import { DB } from "./db.js";
 
 const wishlistContainer = document.getElementById("wishlistContainer");
 const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+const courseModal = document.getElementById("courseModal");
+const modalCard = document.getElementById("modalCard");
+const closeModalBtn = document.querySelector(".close-btn");
+
 if (!currentUser || currentUser.role !== "student") {
     window.location.href = '../login.html';
 }
-  
+
+// عرض تفاصيل الكورس (زي ما في صفحة الكورسات)
+function viewDetails(courseId) {
+    const course = DB.getCourses().find(c => c.id === courseId);
+    if (!course) return;
+
+    modalCard.innerHTML = `
+        <h2>${course.title}</h2>
+        <p><strong>Instructor:</strong> ${course.instructor}</p>
+        <p><strong>Category:</strong> ${course.category}</p>
+        <p><strong>Duration:</strong> ${course.duration}</p>
+        <p><strong>Price:</strong> ${course.price > 0 ? "$" + course.price : "Free"}</p>
+        <p>${course.description}</p>
+        <a href="${course.content}" target="_blank">View Content</a>
+    `;
+
+    courseModal.classList.remove("hidden");
+}
+
+// غلق المودال
+closeModalBtn.addEventListener("click", () => {
+    courseModal.classList.add("hidden");
+});
 
 function renderWishlist(){
     const wishlist = JSON.parse(localStorage.getItem('wishlist_' + currentUser.id)) || [];
@@ -17,8 +43,10 @@ function renderWishlist(){
         wishlistContainer.innerHTML = '<p class="no-data">Your wishlist is empty.</p>';
         return;
     }
+
     const studentNameEl = document.getElementById("studentName");
     studentNameEl.textContent = currentUser.name;
+
     wishlist.forEach(id => {
         const course = courses.find(c => c.id === id);
         if(!course) return;
@@ -30,9 +58,13 @@ function renderWishlist(){
             <h3>${course.title}</h3>
             <p>${course.duration}</p>
             <p>${course.description.slice(0,80)}...</p>
-            <button class="btn-remove" onclick="toggleWishlist('${course.id}')">Remove from Wishlist</button>
-            <button class="btn-details" onclick="viewDetails('${course.id}')">View Details</button>
+            <button class="btn-remove">Remove from Wishlist</button>
+            <button class="btn-details">View Details</button>
         `;
+
+        // Events
+        card.querySelector(".btn-remove").addEventListener("click", () => toggleWishlist(course.id));
+        card.querySelector(".btn-details").addEventListener("click", () => viewDetails(course.id));
 
         wishlistContainer.appendChild(card);
     });
@@ -43,10 +75,10 @@ window.toggleWishlist = function(courseId) {
         localStorage.getItem('wishlist_' + currentUser.id)
     ) || [];
 
-    // remove course from whitlist
+    // remove course from wishlist
     wishlist = wishlist.filter(id => id !== courseId);
 
-    // store the editing 
+    // store the edited wishlist
     localStorage.setItem(
         'wishlist_' + currentUser.id,
         JSON.stringify(wishlist)

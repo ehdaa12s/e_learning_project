@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalCard = document.getElementById("modalCard");
   const closeModalBtn = document.querySelector(".close-btn");
 
-  
   // safety check
   if (!coursesContainer) {
     console.error("coursesContainer not found");
@@ -32,7 +31,19 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.getItem("enrollments_" + currentUser.id)
   ) || [];
 
-  // Render 
+  // ======================= Populate Categories =======================
+  function populateCategories() {
+    const categories = [...new Set(DB.getCourses().map(c => c.category))];
+    filterCategory.innerHTML = `<option value="">All Categories</option>`;
+    categories.forEach(cat => {
+      const option = document.createElement("option");
+      option.value = cat;
+      option.textContent = cat;
+      filterCategory.appendChild(option);
+    });
+  }
+
+  // ======================= Render Courses =======================
   function renderCourses() {
     const courses = DB.getCourses();
 
@@ -120,6 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
     alert("Successfully enrolled 🎉");
     renderCourses();
   }
+
   //current user opened
   const studentNameEl = document.getElementById("studentName");
   studentNameEl.textContent = currentUser.name;
@@ -147,6 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   //  Init 
+  populateCategories(); 
   renderCourses();
 
   if (searchInput) {
@@ -158,10 +171,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   //  Logout 
-    document.getElementById("logoutBtn").addEventListener("click", () => {
+  document.getElementById("logoutBtn").addEventListener("click", () => {
     localStorage.removeItem("currentUser");
     window.location.href = "../index.html";
   });
 });
-
-
