@@ -39,4 +39,9 @@ export const DB = {
 
   getCertificates: () => JSON.parse(localStorage.getItem('certificates')) || [],
   saveCertificates: certificates => localStorage.setItem('certificates', JSON.stringify(certificates)),
+
+  
+  setCurrentUser: user => localStorage.setItem('currentUser', JSON.stringify(user)),
+  getCurrentUser: () => JSON.parse(localStorage.getItem('currentUser')),
+  removeCurrentUser: () => localStorage.removeItem('currentUser'),
 };

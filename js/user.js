@@ -1,37 +1,72 @@
-// js/user.js
 import { DB } from "./db.js";
+import { hashPassword } from "./utils.js";
 
 export class User {
-  constructor(id, name, email, password, role = 'student') {
+  constructor(id, name, email, password, role = "student") {
     this.id = id;
     this.name = name;
     this.email = email;
     this.password = password;
-    this.role = role; 
+    this.role = role;
   }
 
-  static register(name, email, password, role = 'student') {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    if (users.some(u => u.email === email)) throw 'Email already exists';
-    const id = 'u' + Date.now();
-    const user = { id, name, email, password, role }; 
+  // Register
+  static async register(name, email, password, role = "student") {
+    const users = DB.getUsers();
+
+    // Validation
+    if (!name || name.length < 3)
+      throw new Error("Name must be at least 3 characters");
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email))
+      throw new Error("Invalid email");
+
+    if (!password || password.length < 6)
+      throw new Error("Password must be at least 6 characters");
+
+    if (!["student", "admin"].includes(role))
+      throw new Error("Invalid role");
+
+    if (users.some(u => u.email === email))
+      throw new Error("Email already exists");
+
+    const hashedPassword = await hashPassword(password);
+
+    const user = new User(
+      "u" + Date.now(),
+      name,
+      email,
+      hashedPassword,
+      role
+    );
+
     users.push(user);
-    localStorage.setItem('users', JSON.stringify(users));
+    DB.saveUsers(users);
+
     return user;
   }
 
-  static login(email, password) {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const user = users.find(u => u.email === email && u.password === password);
-    if (!user) throw 'Invalid email or password';
-    localStorage.setItem('currentUser', JSON.stringify(user));
+  // Login
+  static async login(email, password) {
+    const users = DB.getUsers();
+    const hashedPassword = await hashPassword(password);
+
+    const user = users.find(
+      u => u.email === email && u.password === hashedPassword
+    );
+
+    if (!user)
+      throw new Error("Invalid email or password");
+
     return user;
   }
+
   static logout() {
-    localStorage.removeItem('currentUser');
+    DB.removeCurrentUser();
   }
 
   static currentUser() {
-    return JSON.parse(localStorage.getItem('currentUser'));
+    return DB.getCurrentUser();
   }
 }

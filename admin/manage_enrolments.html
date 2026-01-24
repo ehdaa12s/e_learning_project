@@ -23,21 +23,26 @@
   <h1>Manage Enrollments</h1>
 
   <table id="enrollmentsTable">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Student Name</th>
-        <th>Course Title</th>
-        <th>Enrollment Date</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Enrollments injected by JS -->
-    </tbody>
-  </table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Course Title</th>
+      <th>Enrolled</th>
+      <th>Completed</th>
+      <th>In Progress</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- data -->
+  </tbody>
+</table>
 </div>
-
+<button id="backDashboardBtn" class="logoutBtn" style="margin-left: 3%;">Back to Dashboard</button>
 <script type="module" src="../js/manage_enrollments.js"></script>
+<script>
+  document.getElementById('backDashboardBtn').addEventListener('click', () => {
+  window.location.href = 'dashboard.html';
+});
+</script>
 </body>
 </html>

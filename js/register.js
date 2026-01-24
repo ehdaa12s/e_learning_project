@@ -1,4 +1,3 @@
-// js/register.js
 import { User } from "./user.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -15,23 +14,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const emailError = document.getElementById("registerEmailError");
   const passwordError = document.getElementById("registerPasswordError");
   const confirmError = document.getElementById("confirmPasswordError");
-  const roleError = document.getElementById("registerTypeError");
+  const roleError = document.getElementById("registerRoleError"); 
   const successMsg = document.getElementById("registerSuccess");
 
-  const nameRegex = /^[A-Za-z_][A-Za-z0-9_]{3,}$/;
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
-
   function clearErrors() {
-    nameError.textContent = "";
-    emailError.textContent = "";
-    passwordError.textContent = "";
-    confirmError.textContent = "";
-    roleError.textContent = "";
-    successMsg.textContent = "";
+    [nameError, emailError, passwordError, confirmError, roleError, successMsg].forEach(el => {
+      if(el) el.textContent = "";
+    });
   }
 
-  registerForm.addEventListener("submit", (e) => {
+  registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     clearErrors();
 
@@ -43,51 +35,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let isValid = true;
 
-    // Username validation
-    if (!nameRegex.test(name)) {
-      nameError.textContent =
-        "Username must be at least 4 characters and not start with a number.";
+    if (name.length < 3) {
+      nameError.textContent = "Name must be at least 3 characters";
       isValid = false;
     }
 
-    // Email validation
-    if (!emailRegex.test(email)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       emailError.textContent = "Please enter a valid email address.";
       isValid = false;
     }
 
-    // Password validation
-    if (!passwordRegex.test(password)) {
-      passwordError.textContent =
-        "Password must be at least 6 characters and contain letters and numbers.";
+    if (password.length < 6) {
+      passwordError.textContent = "Password must be at least 6 characters.";
       isValid = false;
     }
 
-    // Confirm password
     if (password !== confirmPassword) {
       confirmError.textContent = "Passwords do not match.";
       isValid = false;
     }
 
-    // Role validation
-    if (!role) {
-      roleError.textContent = "Please select a role.";
+    if (!["student", "admin"].includes(role)) {
+      roleError.textContent = "Please select a valid role.";
       isValid = false;
     }
 
     if (!isValid) return;
 
     try {
-      User.register(name, email, password, role);
+      await User.register(name, email, password, role);
       successMsg.textContent = "Registered successfully!";
+      successMsg.style.color = "green";
       registerForm.reset();
 
       setTimeout(() => {
         window.location.href = "login.html";
       }, 1000);
-
     } catch (err) {
-      emailError.textContent = err;
+      emailError.textContent = err.message;
     }
   });
 });
