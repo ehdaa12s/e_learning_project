@@ -291,3 +291,40 @@ table button.delete-btn:hover {
   padding: 10px;
   border-radius: 25px;
 }
+
+
+.logo {
+  display: flex;              
+  align-items: center;        
+  gap: 10px;                 
+  font-size: 1.5rem;         
+  font-weight: bold;    
+  color: white;     
+}
+
+.logo img {
+  width: 40px;               
+  height: 40px;            
+}
+
+
+
+.progress-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-bar {
+  width: 120px;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #3f37c9;
+  transition: 0.3s;
+}

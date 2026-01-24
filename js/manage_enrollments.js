@@ -64,3 +64,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   localStorage.removeItem("currentUser");
   window.location.href = "../index.html";
 });
+
+console.log("Enrollments:", DB.getEnrollments());
+console.log("Users:", DB.getUsers());
+console.log("Courses:", DB.getCourses());
