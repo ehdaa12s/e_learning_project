@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <button class="btn-primary" onclick="viewCourse('${course.id}')">View Details</button>
         </div>
       `;
-    }).join("");
+    }).join(""); // using join because the output of map is a array then convert it text
   }
 
   // Render Certificates
