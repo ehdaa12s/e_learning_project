@@ -1,4 +1,4 @@
-import { Category } from "./category.js";
+import { CategoryService } from "./services/categoryService.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const categoryNameInput = document.getElementById("categoryName");
@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function renderCategories() {
     try {
-      const categories = await Category.getAll();
+      const categories = await CategoryService.getAll();
       categoriesTableBody.innerHTML = "";
 
       categories.forEach(cat => {
@@ -29,12 +29,17 @@ document.addEventListener("DOMContentLoaded", () => {
       document.querySelectorAll(".editBtn").forEach(btn => {
         btn.addEventListener("click", async () => {
           const catId = btn.dataset.id;
-          const cat = await Category.findById(catId);
+          const cat = await CategoryService.findById(catId);
           const newName = prompt("Edit Category Name", (cat && cat.name) || "");
           if (!newName || newName.trim() === "") return;
 
           try {
-            await Category.update(catId, { name: newName.trim() });
+            // Validate uniqueness
+            const all = await CategoryService.getAll();
+            if (all.some(c => (c.name || "").toLowerCase() === newName.trim().toLowerCase() && c.id !== catId)) {
+              throw "Category name already exists!";
+            }
+            await CategoryService.update(catId, { name: newName.trim() });
             categorySuccess.textContent = "Category updated successfully!";
             categoryError.textContent = "";
             await renderCategories();
@@ -50,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.addEventListener("click", async () => {
           const catId = btn.dataset.id;
           try {
-            await Category.delete(catId);
+            await CategoryService.delete(catId);
             categorySuccess.textContent = "Category deleted successfully!";
             categoryError.textContent = "";
             await renderCategories();
@@ -76,7 +81,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      await Category.create(name);
+      // Validate uniqueness
+      const all = await CategoryService.getAll();
+      if (all.some(c => (c.name || "").toLowerCase() === name.toLowerCase())) {
+        throw "Category name already exists!";
+      }
+      await CategoryService.create({ name });
       categoryNameInput.value = "";
       categorySuccess.textContent = "Category added successfully!";
       categoryError.textContent = "";

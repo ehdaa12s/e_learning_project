@@ -51,5 +51,10 @@ export const Enrollment = {
   },
   async delete(id) {
     await deleteDoc(doc(db, 'enrollments', id));
+  },
+  async updateStatus(id, status) {
+    // lazy import to avoid expanding imports list; inline update via setDoc-like merge not available
+    const { updateDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+    await updateDoc(doc(db, 'enrollments', id), { status });
   }
 };

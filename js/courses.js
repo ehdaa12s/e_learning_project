@@ -2,17 +2,23 @@ import { auth } from "./firebase.js";
 import { setupPaymentUI } from "./payment.js";
 import { Enrollment } from "./enrollement.js";
 import { CourseService } from "./services/courseService.js";
+import { CategoryService } from "./services/categoryService.js";
 
 const currentUser = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   const coursesContainer = document.getElementById("coursesContainer");
+  const searchInput = document.getElementById("searchInput");
+  const filterCategory = document.getElementById("filterCategory");
+  const logoutBtn = document.getElementById("logoutBtn");
 
   let courses = [];
   const enrollmentsByCourse = new Set();
+  let categories = [];
 
   async function fetchData() {
     courses = await CourseService.getAll();
+    categories = await CategoryService.getAll();
     const user = auth.currentUser;
     if (user) {
       const enrolledIds = await Enrollment.getCoursesByUser(user.uid);
@@ -20,11 +26,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  async function renderCourses() {
-    await fetchData();
-    coursesContainer.innerHTML = "";
+  function applyFilters(list) {
+    const term = (searchInput?.value || "").toLowerCase().trim();
+    const cat = filterCategory?.value || "";
+    return list.filter(c => {
+      const matchesTerm = !term || (c.title || "").toLowerCase().includes(term) || (c.description || "").toLowerCase().includes(term) || (c.instructor || "").toLowerCase().includes(term);
+      const matchesCat = !cat || (c.category || "") === cat;
+      return matchesTerm && matchesCat;
+    });
+  }
 
-    courses.forEach(course => {
+  function renderList(list) {
+    coursesContainer.innerHTML = "";
+    list.forEach(course => {
       const card = document.createElement("div");
       card.classList.add("course-card");
 
@@ -52,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const buyBtn = card.querySelector('.buy-btn');
       const enrollBtn = card.querySelector('.enroll-btn');
       if (buyBtn) {
-        buyBtn.addEventListener('click', () => openPaymentModal(course));
+        buyBtn.addEventListener('click', () => openModal(course, false));
       }
       if (enrollBtn) {
         enrollBtn.addEventListener('click', async () => {
@@ -67,6 +81,24 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  async function renderCourses() {
+    await fetchData();
+    // Populate categories filter
+    if (filterCategory) {
+      filterCategory.innerHTML = '<option value="">All Categories</option>';
+      categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat.name || "";
+        opt.textContent = cat.name || "";
+        filterCategory.appendChild(opt);
+      });
+    }
+    renderList(applyFilters(courses));
+  }
+
+  searchInput?.addEventListener('input', () => renderList(applyFilters(courses)));
+  filterCategory?.addEventListener('change', () => renderList(applyFilters(courses)));
 
   // ---------------- MODAL ----------------
   const modal = document.createElement("div");
@@ -112,14 +144,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const paypalContainer = modal.querySelector('#paypalContainer');
     if (paypalContainer) {
-      const clientId = window.__PAYPAL_CLIENT_ID;
-      if (!clientId || clientId === 'YOUR_PAYPAL_CLIENT_ID') {
-        paypalContainer.innerHTML = '<div class="error">PayPal not configured.</div>';
-      } else {
-        setupPaymentUI({ containerId: 'paypalContainer', course, paypalClientId: clientId });
-      }
+      const clientId = window.__PAYPAL_CLIENT_ID; // may be undefined; payment.js will handle fallback and errors
+      setupPaymentUI({ containerId: 'paypalContainer', course, paypalClientId: clientId });
     }
   }
 
   renderCourses();
+
+  // Logout wiring
+  logoutBtn?.addEventListener('click', async () => {
+    try {
+      const { signOut } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+      const { auth } = await import('./firebase.js');
+      await signOut(auth);
+      window.location.href = '../index.html';
+    } catch (e) {
+      alert('Failed to logout. Please try again.');
+    }
+  });
 });
