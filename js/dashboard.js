@@ -6,15 +6,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const totalUsers = document.getElementById("totalUsers");
   const totalEnrollments = document.getElementById("totalEnrollments");
 
-  // جلب الداتا من الـ DB
   const categories = DB.getCategories();
   const courses = DB.getCourses();
   const users = DB.getUsers();
 
-  // حساب الطلاب فقط
+ 
   const students = users.filter(u => u.role.toLowerCase() === "student");
 
-  // حساب كل الإنرولمنتز لكل الطلاب
+  
   let enrollmentsCount = 0;
   students.forEach(student => {
     const enrollmentsKey = "enrollments_" + student.id;
@@ -22,13 +21,13 @@ document.addEventListener("DOMContentLoaded", () => {
     enrollmentsCount += studentEnrollments.length;
   });
 
-  // عرض النتائج
+  // show all data in cards
   totalCategories.textContent = categories.length;
   totalCourses.textContent = courses.length;
   totalUsers.textContent = students.length;
   totalEnrollments.textContent = enrollmentsCount;
 
-  // عرض Admin login
+ 
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   if (!currentUser) {
     window.location.href = "../login.html";
