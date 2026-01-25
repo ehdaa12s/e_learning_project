@@ -187,7 +187,7 @@ body {
     box-shadow: 0 0 8px rgba(63,55,201,0.3);
 }
 
-/* ======================= Courses & Certificates Grid ======================= */
+/*  Courses & Certificates Grid  */
 .courses-grid,
 .certificates-grid {
     display: grid;
@@ -196,7 +196,7 @@ body {
     margin-top: 20px;
 }
 
-/* ======================= Cards ======================= */
+/*  Cards  */
 .course-card,
 .certificate-card {
     background: white;
@@ -230,7 +230,7 @@ body {
     color: #555;
 }
 
-/* ======================= Buttons ======================= */
+/*  Buttons  */
 .course-card button,
 .certificate-card button,
 .video-controls button,
@@ -272,7 +272,7 @@ body {
     background: #d21866;
 }
 
-/* ======================= Video Box ======================= */
+/*  Video Box  */
 .video-box {
     width: 100%;
     max-width: 900px;
@@ -289,7 +289,7 @@ body {
     display: block;
 }
 
-/* ======================= Progress ======================= */
+/*  Progress  */
 .progress-wrapper {
     max-width: 900px;
     margin: 20px auto;
@@ -320,7 +320,7 @@ body {
     color: #333;
 }
 
-/* ======================= Video Controls ======================= */
+/*  Video Controls  */
 .video-controls {
     display: flex;
     justify-content: center;
@@ -335,7 +335,7 @@ body {
     font-weight: 600;
 }
 
-/* ======================= Modal ======================= */
+/*  Modal  */
 .course-modal {
     position: fixed;
     top: 0;
@@ -423,7 +423,7 @@ body {
 }
 
 
-/* ======================= Responsive ======================= */
+/*  Responsive  */
 @media screen and (max-width: 600px) {
     .video-box iframe {
         height: 300px;
@@ -445,7 +445,7 @@ body {
 }
 
 
-/* ======================= Course Card Fix ======================= */
+/*  Course Card Fix  */
 .course-card {
     display: flex;
     flex-direction: column;

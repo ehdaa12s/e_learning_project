@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.getItem("enrollments_" + currentUser.id)
   ) || [];
 
-  // ======================= Populate Categories =======================
+  // Populate Categories 
   function populateCategories() {
     const categories = [...new Set(DB.getCourses().map(c => c.category))];
     filterCategory.innerHTML = `<option value="">All Categories</option>`;
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ======================= Render Courses =======================
+  // Render Courses
   function renderCourses() {
     const courses = DB.getCourses();
 

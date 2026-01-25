@@ -98,7 +98,7 @@ nav a.active {
   background: var(--secondary);
 }
 
-/* ================= MAIN ================= */
+/*  MAIN  */
 .contact-container {
   display: flex;
   justify-content: center;
@@ -143,7 +143,7 @@ nav a.active {
   text-decoration: underline;
 }
 
-/* ================= FOOTER ================= */
+/*  FOOTER  */
 .LoginFooter {
   background: var(--footer-bg);
   color: #fff;
@@ -154,7 +154,7 @@ nav a.active {
   width: 100%;
 }
 
-/* ================= RESPONSIVE ================= */
+/*  RESPONSIVE  */
 @media (max-width: 768px) {
   .header-container {
     flex-direction: column;

@@ -10,7 +10,6 @@ if (!currentUser || currentUser.role !== "student") {
     window.location.href = '../login.html';
 }
 
-// عرض تفاصيل الكورس (زي ما في صفحة الكورسات)
 function viewDetails(courseId) {
     const course = DB.getCourses().find(c => c.id === courseId);
     if (!course) return;
@@ -28,7 +27,6 @@ function viewDetails(courseId) {
     courseModal.classList.remove("hidden");
 }
 
-// غلق المودال
 closeModalBtn.addEventListener("click", () => {
     courseModal.classList.add("hidden");
 });
